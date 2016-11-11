@@ -223,6 +223,9 @@ return(list(randx=randx, myx=myx, myx.randx=myx[randx], xplt=xplt, xplt.myx.rand
   if(plot2file) dev.off()
 
 }
+
+
+
 scatterplot <-
 function (normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0) {
 # This is intended to show individual replicates vs. average of experimental group
@@ -296,9 +299,10 @@ function (normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0) {
             side = 2, line = 2, cex = 0.75)
       if(plot2file) dev.off()
     }  # end of j loop
-    n
   }  # end of i loop
-}
+}  # end of scatterplot()
+
+
 plot_raw_v_norm <-
 function(linear_scale_raw_mat_with_rownames, str_of_raw_name=NULL, log2_scale_norm_mat_with_rownames, str_of_norm_name=NULL, xrng_vec=range(range(linear_scale_raw_mat_with_rownames, na.rm=T), range(2^log2_scale_norm_mat_with_rownames, na.rm=T)), yrng_vec=log2(xrng_vec), save_as_png=F, string_to_lead_file_name_with=NULL, color_by_vec_of_str=F, color_vec_of_strings=NULL){
   if(save_as_png==TRUE){
