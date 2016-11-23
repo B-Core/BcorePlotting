@@ -13,9 +13,9 @@
 
 summary.plots <-
 function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
-#' A wrapper for several plotting functions that help summarize abundance data
+#' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
 #' @description summary.plots currently wraps a scatterplot
-#' @param rawmat a matrix of raw data. Should have any background addition and be scaled according to normalized data
+#' @param rawmat a matrix of raw data. Should have minimal background addition and be scaled according to normalized data. In other words, rawmat should be the alograw slot of a normMatrix() call.
 #' @param normmat a matrix of experimental data in columns (with headers!)
 #' @param mynorm a label for the current normalization method #Feedback not sure what this data type is
 #' @param samp.labels a vector of brief, pithy display labels for each sample
@@ -127,12 +127,21 @@ function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdat
   row_mk = logical(nrow(normmat)); row_mk[] = TRUE
   # Create a mask indicating which rows have at least 1 measurement per samp.class
   for( myclass in u.samp.classes ){
-    row_mk = row_mk & rowSums(!is.na(normmat[,samp.classes==myclass,drop=F]))>1
+    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class
+      warning(paste0(myclass, " is represented by only one sample. Be aware that this may be problematic for downstream analyses."))
+      row_mk = row_mk & !(is.na(normmat[,samp.classes==myclass]))
+    }else{
+    row_mk = row_mk & rowSums(!is.na(normmat[,samp.classes==myclass]))>1
     if(verbose) {message(sprintf("Masked rows for %s = %i", myclass, sum(row_mk)))}
+    }
   }
   # calculate mean and SDs for intensities by samp.classes
   for( myclass in u.samp.classes ){
-    int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass,drop=F],na.rm=T))
+    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class. Can't take rowMeans of one column.
+      int_mat = cbind(int_mat, normmat[row_mk,samp.classes==myclass])
+    }else{
+      int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass],na.rm=T))
+    }
     if(sum(samp.classes==myclass)>1){
       sdmat = cbind(sdmat, sapply(which(row_mk),
         function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
