@@ -190,7 +190,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 makeHeatmap <-
 function (ratiomat, attribs, plottitle, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
-                        cexRow=0.00001, 
+                        cexRow=0.00001, annRow = NA, annColors = NA,
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
                         labcoltype=c("colnames","colnums") ) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
@@ -209,6 +209,8 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
 #  clim_fix: if set, max abs ratio to show; data>clim_fix are shown as clim_fix
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
+#  annRow: named lists of row annotations; can be single list
+#  annColors:  named lists of annotation colors; names should match names in annRow and attribs
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
 
   # imports
@@ -261,7 +263,7 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=attribs, labCol=colnames(ratiomat),
-           main=plottitle)
+           main=plottitle, annRow = annRow, annColors = annColors)
 
   return(ah_ls)
 }
