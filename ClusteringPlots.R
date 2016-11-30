@@ -184,12 +184,17 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   extra <- list(...)
   # Assign colnames to labels, or assign shapes to sample classes (mirrors colors)
   if("pch" %in% names(extra)){
+    # must set to NULL, otherwise pch is ignored
     plotLabels_v = NULL
-    pointType_v <- extra$pch
+    # get pch vector and assign to appropriate samples based on sample class
+    pointType_v = extra$pch
     names(pointType_v) <- u.samp.classes
     extra$pch = sapply(samp.classes, function(x) x = pointType_v[x], USE.NAMES = F)
+    # also set pch for legend
+    legend.pch = pointType_v
   } else {
       plotLabels_v = colnames(normmat)
+      legend.pch = 16
   } # fi
 
   # plot MDS and capture numeric results
@@ -204,9 +209,9 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   par(xpd=NA) 
   # Plot legend at outer bounds of plotting region, or specific area within plot
   if(legend.pos == "auto"){
-    legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
+    legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.6)
   } else {
-    legend(x=legend.pos, bg = "transparent", bty = "n", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.7)
+    legend(x=legend.pos, bg = "transparent", bty = "n", legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.7)
   } 
   
   return(obj_MDS)
