@@ -180,10 +180,13 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   extra <- list(...)
   # Assign colnames to labels, or assign shapes to sample classes (mirrors colors)
   if("pch" %in% names(extra)){
+    # must set to NULL, otherwise pch is ignored
     plotLabels_v = NULL
-    pointType_v <- extra$pch
+    # get pch vector and assign to appropriate samples based on sample class
+    pointType_v = extra$pch
     names(pointType_v) <- u.samp.classes
     extra$pch = sapply(samp.classes, function(x) x = pointType_v[x], USE.NAMES = F)
+    # also set pch for legend
     legend.pch = pointType_v
   } else {
       plotLabels_v = colnames(normmat)
