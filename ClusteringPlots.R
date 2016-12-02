@@ -211,7 +211,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   if(legend.pos == "auto"){
     legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.6)
   } else {
-    legend(x=legend.pos, bg = "transparent", bty = "n", legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.7)
+    legend(x=legend.pos, bg = "transparent", bty = "n", legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.6)
   } 
   
   return(obj_MDS)
