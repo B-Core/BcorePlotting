@@ -12,7 +12,7 @@
 
 
 summary.plots <-
-function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
+function (rawmat, normmat, mynorm, samp.labels=colnames(rawmat), samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
 # rawmat is the matrix of raw data. Should have any background addition and
 #  be scaled according to normalized data
 # normmat is a matrix of experimental data in columns (with headers!)
