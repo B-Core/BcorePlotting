@@ -12,24 +12,27 @@
 
 
 summary.plots <-
-function (rawmat, normmat, mynorm, samp.labels=colnames(rawmat), samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
-# rawmat is the matrix of raw data. Should have any background addition and
-#  be scaled according to normalized data
-# normmat is a matrix of experimental data in columns (with headers!)
-# mynorm is a label for the current normalization method
-# samp.labels is a vector of brief, pithy display labels for each sample
-# samp.classes is a vector of tags for each sample, used to pick colors
-#  a unique tag per sample colors by sample
-#  a shared tag by experimental groupings colors by experimental group
-# colorspec is a vector of color specifiers for colorRampPalette  
-# plotdata is a list of info relevant to labeling and saving the plot
-#  plotdir:  plot destination directory
-#  plotbase:  base filename for the plot
-#  plottitle:  title for all plots
-# histbins:  default # of bins for density plot
-# expand.2D = multiplier of histbins for 2D histogram
-# plotIDOffset:  a number to offset the plotID values... Can be used to organize
-# Consider adding color! Maybe shade by experimental group
+function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
+#' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
+#' @description summary.plots currently wraps a scatterplot
+#' @param rawmat a matrix of raw data. Should have minimal background addition and be scaled according to normalized data. In other words, rawmat should be the alograw slot of a normMatrix() call.
+#' @param normmat a matrix of experimental data in columns (with headers!)
+#' @param mynorm a label for the current normalization method #Feedback not sure what this data type is
+#' @param samp.labels a vector of brief, pithy display labels for each sample
+#' @param samp.classes a vector of tags for each sample, used to pick colors
+#'  a unique tag per sample colors by sample (e.g., c("01", "02", "03", "04"))
+#'  a shared tag by experimental groupings colors by experimental group (e.g. c("male", "female", "female", "male"))
+#' @param colorspec a vector of color specifiers for colorRampPalette  
+#' @param plotdata a list of info relevant to labeling and saving the plot. Consists of three elements:
+#' plotdir:  plot destination directory
+#'  plotbase:  base filename for the plot
+#'  plottitle:  title for all plots
+#' @param histbins default number of bins for density plot
+#' @param expand.2D a numeric multiplier of histbins for 2D histogram
+#' @param filesep a string to designate file separators #Feedback not sure
+#' @param plotIDOffset a number to offset the plotID values... Can be used to organize
+#' @return  
+#' @export
 
   # imports
   require(data.table)
@@ -124,20 +127,29 @@ function (rawmat, normmat, mynorm, samp.labels=colnames(rawmat), samp.classes, c
   row_mk = logical(nrow(normmat)); row_mk[] = TRUE
   # Create a mask indicating which rows have at least 1 measurement per samp.class
   for( myclass in u.samp.classes ){
+    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class
+      warning(paste0(myclass, " is represented by only one sample. Be aware that this may be problematic for downstream analyses."))
+      row_mk = row_mk & !(is.na(normmat[,samp.classes==myclass]))
+    }else{
     row_mk = row_mk & rowSums(!is.na(normmat[,samp.classes==myclass]))>1
     if(verbose) {message(sprintf("Masked rows for %s = %i", myclass, sum(row_mk)))}
+    }
   }
   # calculate mean and SDs for intensities by samp.classes
   for( myclass in u.samp.classes ){
-    int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass],na.rm=T))
+    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class. Can't take rowMeans of one column.
+      int_mat = cbind(int_mat, normmat[row_mk,samp.classes==myclass])
+    }else{
+      int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass],na.rm=T))
+    }
     if(sum(samp.classes==myclass)>1){
       sdmat = cbind(sdmat, sapply(which(row_mk),
-        function(x){ sd( normmat[x,samp.classes==myclass] ,na.rm=T) }) )
+        function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
     } else {
       sdmat = cbind(sdmat, rep(0,nrow(normmat)) )
     }
   }
-  colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes
+  colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes #Feedback my u.samp.classes is length 4 while dim sdmat is 0,5.?
   rownames(sdmat) = rownames(normmat)[row_mk]
 
   # colors
@@ -222,7 +234,7 @@ return(list(randx=randx, myx=myx, myx.randx=myx[randx], xplt=xplt, xplt.myx.rand
 
   if(plot2file) dev.off()
 
-}
+} #END summary.plots
 
 
 

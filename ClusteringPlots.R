@@ -146,7 +146,7 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
 }
 makeMDSplot <-
 function (normmat, attribs, oneclass, colorspec, plottitle, 
-                        subtitle=NULL, ngenes=NULL) {
+                        subtitle=NULL, ngenes=NULL, legend.pos="auto", ...) {
 # This function considers only a single clustering variable in coloring MDS plot... Will need to be gneralized
 # Uses the matrix values to cluster the data
 #  normmat:  data matrix, with unique & informative colnames 
@@ -158,12 +158,16 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 #  plottitle:  title for all plots
 #  subtitle: optional subtitle to add below title on this plot
 #  ngenes: number of "top" genes for plotMDS to select for distance calculation
+#  legend.pos: "auto" means legend in default configuration at upper limit of user space, can specify
+#    standard options (see ?legend)
+#  ...: any extra plotting parameters to pass to plotMDS. (change plotting points, axis labels, etc.)
 
   # imports
   require(limma)
 
   # factor to plot
   samp.classes = attribs[[oneclass]]
+  
   # set up plotting colors
   u.samp.classes = unique(samp.classes)
   colmap = colorRampPalette(colorspec)
@@ -175,19 +179,41 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 
   # number of "top" genes used for sample-sample distance calculation
   if( is.null(ngenes) ) { ngenes = nrow(normmat) }
+  
+  # Grab extra arguments specified in ...
+  extra <- list(...)
+  # Assign colnames to labels, or assign shapes to sample classes (mirrors colors)
+  if("pch" %in% names(extra)){
+    # must set to NULL, otherwise pch is ignored
+    plotLabels_v = NULL
+    # get pch vector and assign to appropriate samples based on sample class
+    pointType_v = extra$pch
+    names(pointType_v) <- u.samp.classes
+    extra$pch = sapply(samp.classes, function(x) x = pointType_v[x], USE.NAMES = F)
+    # also set pch for legend
+    legend.pch = pointType_v
+  } else {
+      plotLabels_v = colnames(normmat)
+      legend.pch = 16
+  } # fi
 
   # plot MDS and capture numeric results
   par( mar=c(5,4,4,4)+0.1 ) #default mar=c(5,4,4,2)+0.1; margin in lines
-  obj_MDS = plotMDS(normmat, col=colvec, labels=colnames(normmat),
-          top=ngenes, main=plottitle, cex=.6 )
+  standardArgs_v = list(normmat, col=colvec, labels=plotLabels_v, top=ngenes, main=plottitle, cex=.6)
+  obj_MDS = do.call(plotMDS, c(standardArgs_v, extra))
   if( !is.null(subtitle) ){ mtext(subtitle, cex=.8) }
 
   # add legend
   axl = par("usr") # c(x1,x2,y1,y2) == extremes of user coords in plot region
   # allow plotting anywhere on device, and widen right margin
   par(xpd=NA) 
-  legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
-
+  # Plot legend at outer bounds of plotting region, or specific area within plot
+  if(legend.pos == "auto"){
+    legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.6)
+  } else {
+    legend(x=legend.pos, bg = "transparent", bty = "n", legend=u.samp.classes, col=u.col.classes, pch=legend.pch, cex=.6)
+  } 
+  
   return(obj_MDS)
 
 }
