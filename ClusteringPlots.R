@@ -266,7 +266,8 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, 
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
-                        labcoltype=c("colnames","colnums") ) {
+                        labcoltype=c("colnames","colnums") ,
+                        setColv=NULL) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
 #  normmat:  abundance data matrix, optionally used to set color limits
@@ -284,6 +285,8 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
+#  Colv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+#      Defaults to NULL to keep original clustering (hierarchical)
 
   # imports
   require(NMF)
@@ -293,6 +296,22 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
     labCol = colnames(ratiomat)
   } else {
     labCol = 1:ncol(ratiomat)
+  }
+  
+  
+  colnames(ratiomat)[colIndex]
+  # Sort matrix columns by attribs
+  if (!is.null(setColv)){
+    # Get column indeces and combine with ordering attribute
+    colIndex = 1:ncol(ratiomat)
+    temp_dt = as.data.table(cbind(colIndex, attribs[[setColv]]))
+    # Sort by ordering attribute
+    setkey(temp_dt, "V2")
+    # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
+    colOut = as.numeric(temp_dt$colIndex)
+    attribs[[setColv]] <- temp_dt$V2
+    ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
+    rm(temp_dt)
   }
   # calculate the number of colors in each half vector
   if(length(colorbrew)>1){ # color vector given
@@ -335,7 +354,7 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=attribs, labCol=colnames(ratiomat),
-           main=plottitle)
+           main=plottitle, Colv=NA)
 
   return(ah_ls)
 }
@@ -381,3 +400,8 @@ function(aheatmapObj, numSubTrees, cutByRowLogic=T){
   }
   return(return_ls)
 }
+
+
+set.seed(21)
+A <- matrix(rnorm(50),10,5)
+A[order(A[,1]),]
