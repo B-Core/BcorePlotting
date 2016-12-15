@@ -262,7 +262,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 } # makeMDSplot
 
 makeHeatmap <-
-function (ratiomat, attribs, plottitle, normmat=NULL,
+function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, 
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
@@ -299,7 +299,6 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
   }
   
   
-  colnames(ratiomat)[colIndex]
   # Sort matrix columns by attribs
   if (!is.null(setColv)){
     # Get column indeces and combine with ordering attribute
@@ -311,7 +310,10 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
     colOut = as.numeric(temp_dt$colIndex)
     attribs[[setColv]] <- temp_dt$V2
     ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
+    setColv = NA
     rm(temp_dt)
+  } else {
+    setColv = NULL
   }
   # calculate the number of colors in each half vector
   if(length(colorbrew)>1){ # color vector given
@@ -354,7 +356,7 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=attribs, labCol=colnames(ratiomat),
-           main=plottitle, Colv=NA)
+           main=plottitle, sub=subtitle, Colv=setColv)
 
   return(ah_ls)
 }
