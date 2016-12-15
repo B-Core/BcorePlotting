@@ -140,6 +140,65 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
   invisible( list( ah_ls=ah_ls, obj_MDS=obj_MDS) )
   
 }
+
+# Map colors to plotting factor and samples
+assignMappingSpecs <- function(attribs, oneclass, colorspec){
+  # Get factor to plot
+  sampClasses_v = attribs[[oneclass]]
+  
+  # Set up plotting colors based on classes
+  uSampClasses_v = unique(sampClasses_v)
+  colorMap = colorRampPalette(colorspec)
+  plotColors_v = colorMap(length(uSampClasses_v))
+  # Map factor-based colors back to individual samples
+  plotColors_v = plotColors_v[as.numeric(as.factor(sampClasses_v))]
+  # R doesn't re-sort on unique: saves order of occurrence
+  uPlotColors_v = unique(plotColors_v)
+  # Return
+  return(list("sampClasses_v" = sampClasses_v, 
+              "uSampClasses_v" = uSampClasses_v, 
+              "plotColors_v" = plotColors_v, 
+              "uPlotColors_v" = uPlotColors_v))
+} # assignMappingSpecs
+
+# Replicate color mapping with point types and legend point types
+assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, normmat){
+  # Assign colnames to labels (default), or assign shapes to sample classes (will mirror colors)
+  if ("pch" %in% names(extraParams_ls)){
+    # pch is ignored in plots if plot labels is non-null
+    plotLabels_v = NULL
+    # Get pch portion of extraParams and map to samples
+    pointType_v = extraParams_ls$pch
+    names(pointType_v) = uSampClasses_v
+    extraParams_ls$pch = sapply(sampClasses_v, function(x) x = pointType_v[x], USE.NAMES = F)
+    # Legend needs to be updated also
+    pchLegend_v = pointType_v
+  } else {
+    # Set to default column names and legend point
+    plotLabels_v = colnames(normmat)
+    pch = NULL # ignored due to plotLabels_v assignment, but need for consistency
+    pchLegend_v = 16
+  } # fi
+  # Return
+  return(list("pch" = extraParams_ls$pch,
+              "plotLabels_v" = plotLabels_v,
+              "pchLegend_v" = pchLegend_v))
+} # assignLabelSpecs
+
+createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v){
+  # Some arguments will be used regardless of choice
+  standardArgs_v = list(legend=uSampClasses_v, col=uPlotColors_v, pch=pchLegend_v, cex=.6)
+  # If position not specified, use default
+  if (legendPos_v == "auto"){
+    obj_legend = do.call(legend, c(x = axl[2]-.025*abs(diff(axl[1:2])), y = axl[4], standardArgs_v))
+  } else {
+    # Move legend to specified area
+    obj_legend = do.call(legend, c(x=legendPos_v, bg = "transparent", bty = "n", standardArgs_v))
+  } # fi
+  # Return
+  return(obj_legend)
+} # createLegend
+
 makeMDSplot <-
 function (normmat, attribs, oneclass, colorspec, plottitle, 
                         subtitle=NULL, ngenes=NULL, legendPos_v="auto", ...) {
@@ -168,52 +227,11 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   extraParams_ls = list(...)
   
   # Map colors to plotting factor and samples
-  assignMappingSpecs = function(attribs, oneclass){
-    # Get factor to plot
-    sampClasses_v = attribs[[oneclass]]
-    
-    # Set up plotting colors based on classes
-    uSampClasses_v = unique(sampClasses_v)
-    colorMap = colorRampPalette(colorspec)
-    plotColors_v = colorMap(length(uSampClasses_v))
-    # Map factor-based colors back to individual samples
-    plotColors_v = plotColors_v[as.numeric(as.factor(sampClasses_v))]
-    # R doesn't re-sort on unique: saves order of occurrence
-    uPlotColors_v = unique(plotColors_v)
-    # Return
-    return(list("sampClasses_v" = sampClasses_v, 
-                "uSampClasses_v" = uSampClasses_v, 
-                "plotColors_v" = plotColors_v, 
-                "uPlotColors_v" = uPlotColors_v))
-  } # assignMappingSpecs
-  
   mappingSpecs_lsv = assignMappingSpecs(attribs, 
-                                        oneclass)
+                                        oneclass,
+                                        colorspec)
   
   # Replicate color mapping with point types and legend point types
-  assignLabelSpecs = function(extraParams_ls, sampClasses_v, uSampClasses_v, normmat){
-    # Assign colnames to labels (default), or assign shapes to sample classes (will mirror colors)
-    if ("pch" %in% names(extraParams_ls)){
-      # pch is ignored in plots if plot labels is non-null
-      plotLabels_v = NULL
-      # Get pch portion of extraParams and map to samples
-      pointType_v = extraParams_ls$pch
-      names(pointType_v) = uSampClasses_v
-      extraParams_ls$pch = sapply(sampClasses_v, function(x) x = pointType_v[x], USE.NAMES = F)
-      # Legend needs to be updated also
-      pchLegend_v = pointType_v
-    } else {
-      # Set to default column names and legend point
-      plotLabels_v = colnames(normmat)
-      pch = NULL # ignored due to plotLabels_v assignment, but need for consistency
-      pchLegend_v = 16
-    } # fi
-    # Return
-    return(list("pch" = extraParams_ls$pch,
-                "plotLabels_v" = plotLabels_v,
-                "pchLegend_v" = pchLegend_v))
-  } # assignLabelSpecs
-  
   labelSpecs_lsv <- assignLabelSpecs(extraParams_ls, 
                                      mappingSpecs_lsv$sampClasses_v, 
                                      mappingSpecs_lsv$uSampClasses_v, 
@@ -242,20 +260,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   # allow plotting anywhere on device, and widen right margin
   par(xpd=NA) 
   
-  createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v){
-    # Some arguments will be used regardless of choice
-    standardArgs_v = list(legend=uSampClasses_v, col=uPlotColors_v, pch=pchLegend_v, cex=.6)
-    # If position not specified, use default
-    if (legendPos_v == "auto"){
-      obj_legend = do.call(legend, c(x = axl[2]-.025*abs(diff(axl[1:2])), y = axl[4], standardArgs_v))
-    } else {
-      # Move legend to specified area
-      obj_legend = do.call(legend, c(x=legendPos_v, bg = "transparent", bty = "n", standardArgs_v))
-    } # fi
-    # Return
-    return(obj_legend)
-  } # assignLegendSpecs
-  
+  # Create and apply legend
   createLegend(legendPos_v, mappingSpecs_lsv$uSampClasses_v, mappingSpecs_lsv$uPlotColors_v, labelSpecs_lsv$pchLegend_v)
   
   return(obj_MDS)
@@ -297,7 +302,6 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   } else {
     labCol = 1:ncol(ratiomat)
   }
-  
   
   # Sort matrix columns by attribs
   if (!is.null(setColv)){
@@ -403,7 +407,10 @@ function(aheatmapObj, numSubTrees, cutByRowLogic=T){
   return(return_ls)
 }
 
+<<<<<<< Updated upstream
 
 set.seed(21)
 A <- matrix(rnorm(50),10,5)
 A[order(A[,1]),]
+=======
+>>>>>>> Stashed changes
