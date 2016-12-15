@@ -407,10 +407,3 @@ function(aheatmapObj, numSubTrees, cutByRowLogic=T){
   return(return_ls)
 }
 
-<<<<<<< Updated upstream
-
-set.seed(21)
-A <- matrix(rnorm(50),10,5)
-A[order(A[,1]),]
-=======
->>>>>>> Stashed changes
