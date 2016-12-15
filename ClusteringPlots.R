@@ -272,7 +272,7 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         cexRow=0.00001, 
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
                         labcoltype=c("colnames","colnums") ,
-                        setColv=NULL) {
+                        setColv=NULL, colOrder_v=NULL) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
 #  normmat:  abundance data matrix, optionally used to set color limits
@@ -290,8 +290,10 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
-#  Colv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+#  setColv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
 #      Defaults to NULL to keep original clustering (hierarchical)
+#  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
+#      to NULL so that if setColv is specified alone, output order will be alphabetical.
 
   # imports
   require(NMF)
@@ -309,12 +311,18 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
     colIndex = 1:ncol(ratiomat)
     temp_dt = as.data.table(cbind(colIndex, attribs[[setColv]]))
     # Sort by ordering attribute
-    setkey(temp_dt, "V2")
+    if (is.null(colOrder_v)){
+      # Simple alphabetical
+      setkey(temp_dt, "V2")
+    } else {
+      # Specific order
+      temp_dt <- temp_dt[order(match(`V2`, colOrder_v))]
+    }
     # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
     colOut = as.numeric(temp_dt$colIndex)
     attribs[[setColv]] <- temp_dt$V2
     ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
-    setColv = NA
+    setColv = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
     rm(temp_dt)
   } else {
     setColv = NULL
