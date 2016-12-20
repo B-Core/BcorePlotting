@@ -59,6 +59,7 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
                        heatmap_plot=TRUE, MDS_plot=TRUE, 
                        clim.pct=0.99, clim_fix=NULL, 
                        plot2file = FALSE, filesep='/', 
+                       annColors = NA, annRow = NA,
                        cexRow=0.00001, png_res=300) {
 # This is intended to display differential expression 
 # It will create a heatmap of ratios and an MDS plot from the same ratios
@@ -79,6 +80,9 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
 # colorspec is a vector of color specifiers for colorRampPalette  
 # clim.pct:  0:1 - fraction of data to limit max color
 # clim_fix: if set, max abs ratio to show; data>clim_fix are shown as clim_fix
+# annRow: optional named lists of row annotations; can be single list
+# annColors:  optional named lists of annotation colors;
+#    names should match names in annRow and attribs
 # cexRow: rowlabel size for heatmap, set to ~invisible by default
 # png_res: resolution of saved png files in dpi; default 300
 
@@ -115,7 +119,7 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
     }
     
     # plot heatmap
-    ah_ls = makeHeatmap( ratiomat=ratiomat[rowmask,], attribs=attribs, plottitle = plotdata$plottitle, clim.pct=clim.pct, clim_fix=clim_fix, cexRow=cexRow)
+    ah_ls = makeHeatmap( ratiomat=ratiomat[rowmask,], attribs=attribs, plottitle = plotdata$plottitle, clim.pct=clim.pct, clim_fix=clim_fix, cexRow=cexRow, annColors = annColors, annRow = annRow)
     
     if(plot2file) dev.off()
   }
@@ -269,7 +273,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 makeHeatmap <-
 function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
-                        cexRow=0.00001, 
+                        cexRow=0.00001, annRow = NA, annColors = NA,
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
                         labcoltype=c("colnames","colnums") ,
                         setColv=NULL, colOrder_v=NULL) {
@@ -289,6 +293,8 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 #  clim_fix: if set, max abs ratio to show; data>clim_fix are shown as clim_fix
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
+#  annRow: named lists of row annotations; can be single list
+#  annColors:  named lists of annotation colors; names should match names in annRow and attribs
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
 #  setColv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
 #      Defaults to NULL to keep original clustering (hierarchical)
@@ -368,7 +374,8 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=attribs, labCol=colnames(ratiomat),
-           main=plottitle, sub=subtitle, Colv=setColv)
+           main=plottitle, annRow=annRow, annColors=annColors, 
+           sub=subtitle, Colv=setColv)
 
   return(ah_ls)
 }
