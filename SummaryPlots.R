@@ -31,7 +31,7 @@ function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdat
 #' @param expand.2D a numeric multiplier of histbins for 2D histogram
 #' @param filesep a string to designate file separators #Feedback not sure
 #' @param plotIDOffset a number to offset the plotID values... Can be used to organize
-#' @return  
+#' @return if verbose is TRUE, a list of ___
 #' @export
 
   # imports
