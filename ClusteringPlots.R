@@ -140,9 +140,70 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
   invisible( list( ah_ls=ah_ls, obj_MDS=obj_MDS) )
   
 }
+
+# Map colors to plotting factor and samples
+assignMappingSpecs <- function(attribs, oneclass, colorspec){
+  # Get factor to plot
+  sampClasses_v = attribs[[oneclass]]
+  
+  # Set up plotting colors based on classes
+  uSampClasses_v = unique(sampClasses_v)
+  colorMap = colorRampPalette(colorspec)
+  plotColors_v = colorMap(length(uSampClasses_v))
+  # Map factor-based colors back to individual samples
+  plotColors_v = plotColors_v[as.numeric(as.factor(sampClasses_v))]
+  # R doesn't re-sort on unique: saves order of occurrence
+  uPlotColors_v = unique(plotColors_v)
+  # Return
+  return(list("sampClasses_v" = sampClasses_v, 
+              "uSampClasses_v" = uSampClasses_v, 
+              "plotColors_v" = plotColors_v, 
+              "uPlotColors_v" = uPlotColors_v))
+} # assignMappingSpecs
+
+# Replicate color mapping with point types and legend point types
+assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, normmat){
+  # Assign colnames to labels (default), or assign shapes to sample classes (will mirror colors)
+  if ("pch" %in% names(extraParams_ls)){
+    # pch is ignored in plots if plot labels is non-null
+    plotLabels_v = NULL
+    # Get pch portion of extraParams and map to samples
+    pointType_v = extraParams_ls$pch
+    names(pointType_v) = uSampClasses_v
+    extraParams_ls$pch = sapply(sampClasses_v, function(x) x = pointType_v[x], USE.NAMES = F)
+    # Legend needs to be updated also
+    pchLegend_v = pointType_v
+  } else {
+    # Set to default column names and legend point
+    plotLabels_v = colnames(normmat)
+    extraParams_ls$pch = NULL # ignored due to plotLabels_v assignment, but need for consistency
+                              # changed from pch = NULL to extraParams_ls$pch = NULL. I don't think
+                              # it's necessary, but may be more informative.
+    pchLegend_v = 16
+  } # fi
+  # Return
+  return(list("pch" = extraParams_ls$pch,
+              "plotLabels_v" = plotLabels_v,
+              "pchLegend_v" = pchLegend_v))
+} # assignLabelSpecs
+
+createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v){
+  standardArgs_v = list(legend=uSampClasses_v, col=uPlotColors_v, pch=pchLegend_v, cex=.6)
+  # If position not specified, use default
+  if (legendPos_v == "auto"){
+    axl = par("usr") # c(x1,x2,y1,y2) == extremes of user coords in plot region
+    obj_legend = do.call(legend, c(x = axl[2]-.025*abs(diff(axl[1:2])), y = axl[4], standardArgs_v))
+  } else {
+    # Move legend to specified area
+    obj_legend = do.call(legend, c(x=legendPos_v, bg = "transparent", bty = "n", standardArgs_v))
+  } # fi
+  # Return
+  return(obj_legend)
+} # createLegend
+
 makeMDSplot <-
 function (normmat, attribs, oneclass, colorspec, plottitle, 
-                        subtitle=NULL, ngenes=NULL) {
+                        subtitle=NULL, ngenes=NULL, legendPos_v="auto", ...) {
 # This function considers only a single clustering variable in coloring MDS plot... Will need to be gneralized
 # Uses the matrix values to cluster the data
 #  normmat:  data matrix, with unique & informative colnames 
@@ -154,45 +215,64 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 #  plottitle:  title for all plots
 #  subtitle: optional subtitle to add below title on this plot
 #  ngenes: number of "top" genes for plotMDS to select for distance calculation
+#  legend.pos: "auto" means legend in default configuration at upper limit of user space, can specify
+#    standard options (see ?legend)
+#  ...: any extra plotting parameters to pass to plotMDS. (change plotting points, axis labels, etc.)
 
   # imports
   require(limma)
 
-  # factor to plot
-  samp.classes = attribs[[oneclass]]
-  # set up plotting colors
-  u.samp.classes = unique(samp.classes)
-  colmap = colorRampPalette(colorspec)
-  colvec = colmap(length(u.samp.classes))
-  # map colors back to samples
-  colvec = colvec[as.numeric(as.factor(samp.classes))]
-  # R doesn't re-sort on unique: saves order of occurrence
-  u.col.classes = unique(colvec) 
-
   # number of "top" genes used for sample-sample distance calculation
   if( is.null(ngenes) ) { ngenes = nrow(normmat) }
+  
+  # Grab extra arguments specified in ...
+  extraParams_ls = list(...)
+  
+  # Map colors to plotting factor and samples
+  mappingSpecs_lsv = assignMappingSpecs(attribs, 
+                                        oneclass,
+                                        colorspec)
+  
+  # Replicate color mapping with point types and legend point types
+  labelSpecs_lsv <- assignLabelSpecs(extraParams_ls, 
+                                     mappingSpecs_lsv$sampClasses_v, 
+                                     mappingSpecs_lsv$uSampClasses_v, 
+                                     normmat)
+  
+  # Update original input with assignLabelSpecs output
+  extraParams_ls$pch = labelSpecs_lsv$pch
 
   # plot MDS and capture numeric results
   par( mar=c(5,4,4,4)+0.1 ) #default mar=c(5,4,4,2)+0.1; margin in lines
-  obj_MDS = plotMDS(normmat, col=colvec, labels=colnames(normmat),
-          top=ngenes, main=plottitle, cex=.6 )
+  # Concatenate all the standard arguments into a vector
+  standardArgs_v = list(normmat, 
+                        col=mappingSpecs_lsv$plotColors_v,
+                        labels=labelSpecs_lsv$plotLabels_v,
+                        top=ngenes,
+                        main=plottitle,
+                        cex=.6)
+  # Create MDS object with all standard arguments and any extra arguments, if exist.
+  obj_MDS = do.call(plotMDS, c(standardArgs_v, extraParams_ls))
+  
+  # Add subtitle, if specified
   if( !is.null(subtitle) ){ mtext(subtitle, cex=.8) }
 
-  # add legend
-  axl = par("usr") # c(x1,x2,y1,y2) == extremes of user coords in plot region
   # allow plotting anywhere on device, and widen right margin
   par(xpd=NA) 
-  legend(x=axl[2]-.025*abs(diff(axl[1:2])), y=axl[4], legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
-
+  
+  # Create and apply legend
+  createLegend(legendPos_v, mappingSpecs_lsv$uSampClasses_v, mappingSpecs_lsv$uPlotColors_v, labelSpecs_lsv$pchLegend_v)
+  
   return(obj_MDS)
+} # makeMDSplot
 
-}
 makeHeatmap <-
-function (ratiomat, attribs, plottitle, normmat=NULL,
+function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, 
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
-                        labcoltype=c("colnames","colnums") ) {
+                        labcoltype=c("colnames","colnums") ,
+                        setColv=NULL, colOrder_v=NULL) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
 #  normmat:  abundance data matrix, optionally used to set color limits
@@ -210,6 +290,10 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
+#  setColv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+#      Defaults to NULL to keep original clustering (hierarchical)
+#  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
+#      to NULL so that if setColv is specified alone, output order will be alphabetical.
 
   # imports
   require(NMF)
@@ -219,6 +303,29 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
     labCol = colnames(ratiomat)
   } else {
     labCol = 1:ncol(ratiomat)
+  }
+  
+  # Sort matrix columns by attribs
+  if (!is.null(setColv)){
+    # Get column indeces and combine with ordering attribute
+    colIndex = 1:ncol(ratiomat)
+    temp_dt = as.data.table(cbind(colIndex, attribs[[setColv]]))
+    # Sort by ordering attribute
+    if (is.null(colOrder_v)){
+      # Simple alphabetical
+      setkey(temp_dt, "V2")
+    } else {
+      # Specific order
+      temp_dt <- temp_dt[order(match(`V2`, colOrder_v))]
+    }
+    # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
+    colOut = as.numeric(temp_dt$colIndex)
+    attribs[[setColv]] <- temp_dt$V2
+    ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
+    setColv = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
+    rm(temp_dt)
+  } else {
+    setColv = NULL
   }
   # calculate the number of colors in each half vector
   if(length(colorbrew)>1){ # color vector given
@@ -261,7 +368,7 @@ function (ratiomat, attribs, plottitle, normmat=NULL,
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=attribs, labCol=colnames(ratiomat),
-           main=plottitle)
+           main=plottitle, sub=subtitle, Colv=setColv)
 
   return(ah_ls)
 }
@@ -307,3 +414,4 @@ function(aheatmapObj, numSubTrees, cutByRowLogic=T){
   }
   return(return_ls)
 }
+
