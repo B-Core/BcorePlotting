@@ -176,7 +176,9 @@ assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, norm
   } else {
     # Set to default column names and legend point
     plotLabels_v = colnames(normmat)
-    pch = NULL # ignored due to plotLabels_v assignment, but need for consistency
+    extraParams_ls$pch = NULL # ignored due to plotLabels_v assignment, but need for consistency
+                              # changed from pch = NULL to extraParams_ls$pch = NULL. I don't think
+                              # it's necessary, but may be more informative.
     pchLegend_v = 16
   } # fi
   # Return
@@ -186,10 +188,10 @@ assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, norm
 } # assignLabelSpecs
 
 createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v){
-  # Some arguments will be used regardless of choice
   standardArgs_v = list(legend=uSampClasses_v, col=uPlotColors_v, pch=pchLegend_v, cex=.6)
   # If position not specified, use default
   if (legendPos_v == "auto"){
+    axl = par("usr") # c(x1,x2,y1,y2) == extremes of user coords in plot region
     obj_legend = do.call(legend, c(x = axl[2]-.025*abs(diff(axl[1:2])), y = axl[4], standardArgs_v))
   } else {
     # Move legend to specified area
@@ -255,8 +257,6 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   # Add subtitle, if specified
   if( !is.null(subtitle) ){ mtext(subtitle, cex=.8) }
 
-  # add legend
-  axl = par("usr") # c(x1,x2,y1,y2) == extremes of user coords in plot region
   # allow plotting anywhere on device, and widen right margin
   par(xpd=NA) 
   
