@@ -146,12 +146,13 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
 }
 
 # Map colors to plotting factor and samples
-assignMappingSpecs <- function(attribs, oneclass, colorspec){
+assignMappingSpecs <- function(attribs, oneclass, colorspec, varPoints_v=NULL){
 #  attribs:  list of sample classifications to be tracked in clustering.
 #    each list element contains a string vector with one label per sample
 #  oneclass: string name of attribs element to be used in MDS plot
 #  colorspec: vector of color specifiers for colorRampPalette  
 #    colors are generated per sample by their clustering variable values
+#  varPoints_v: vector of values to scale points by. Default is no scaling
   
   # Get factor to plot
   sampClasses_v = attribs[[oneclass]]
@@ -164,14 +165,28 @@ assignMappingSpecs <- function(attribs, oneclass, colorspec){
   plotColors_v = plotColors_v[as.numeric(as.factor(sampClasses_v))]
   # R doesn't re-sort on unique: saves order of occurrence
   uPlotColors_v = unique(plotColors_v)
+  # Set point size output. Either all points are 0.6, or points are scaled 
+  if (is.null(varPoints_v)){
+    plotCex_v = 0.6
+  } else {
+    # Size range of values
+    sizeRange_v = range(varPoints_v)
+    # Get step size
+    stepSize_v = (sizeRange_v[2] - sizeRange_v[1] - 1) / 14
+    # Scale varPoints_v by stepSize_v to a range from 1-15
+    scaledVarPoints_v = sapply(varPoints_v, function(x) round((x-(sizeRange_v[1]-1))/stepSize_v)) + 1
+    # Change these to appropriate cex values
+    plotCex_v = ((scaledVarPoints_v / 10) + 0.4)
+  } # fi
   # Return
   return(list("sampClasses_v" = sampClasses_v, 
               "uSampClasses_v" = uSampClasses_v, 
               "plotColors_v" = plotColors_v, 
-              "uPlotColors_v" = uPlotColors_v))
+              "uPlotColors_v" = uPlotColors_v,
+              "plotCex_v" = plotCex_v))
 } # assignMappingSpecs
 
-# Replicate color mapping with point types and legend point types
+# Replicate color mapping with point types & sizes and legend point types
 assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, normmat){
 #  extraParams_ls: list of extra plotting parameters. Name of element must be exact name of default plotting argument
 #  sampClasses_v: vector of length == ncol(normmat) containing grouping identifier for each sample
@@ -226,7 +241,7 @@ createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v
 
 makeMDSplot <-
 function (normmat, attribs, oneclass, colorspec, plottitle, 
-                        subtitle=NULL, ngenes=NULL, legendPos_v="auto", ...) {
+                        subtitle=NULL, ngenes=NULL, legendPos_v="auto", varPoints_v=NULL, ...) {
 # This function considers only a single clustering variable in coloring MDS plot... Will need to be gneralized
 # Uses the matrix values to cluster the data
 #  normmat:  data matrix, with unique & informative colnames 
@@ -240,6 +255,8 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 #  ngenes: number of "top" genes for plotMDS to select for distance calculation
 #  legendPos_v: "auto" means legend in default configuration at upper limit of user space, can specify
 #    standard options (see ?legend)
+#  varPoints_v: vector of values to scale points by. Default is no scaling. If used, values are placed into 15 bins and
+#    assigned cex values from 0.5 to 1.9
 #  ...: any extra plotting parameters to pass to plotMDS. (change plotting points, axis labels, etc.)
 
   # imports
@@ -254,7 +271,8 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   # Map colors to plotting factor and samples
   mappingSpecs_lsv = assignMappingSpecs(attribs, 
                                         oneclass,
-                                        colorspec)
+                                        colorspec,
+                                        varPoints_v)
   
   # Replicate color mapping with point types and legend point types
   labelSpecs_lsv <- assignLabelSpecs(extraParams_ls, 
@@ -273,7 +291,7 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
                         labels=labelSpecs_lsv$plotLabels_v,
                         top=ngenes,
                         main=plottitle,
-                        cex=.6)
+                        cex=mappingSpecs_lsv$plotCex_v)
   # Create MDS object with all standard arguments and any extra arguments, if exist.
   obj_MDS = do.call(plotMDS, c(standardArgs_v, extraParams_ls))
   

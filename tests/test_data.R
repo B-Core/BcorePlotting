@@ -1,5 +1,6 @@
 # Create Test Matrix and other metadata
 require(RColorBrewer)
+set.seed(seed = 1)
 # Create gene names
 sampleGeneNames_v <-  sprintf("Gene%d", 1:200)
 sampleSampleNames_v <- sprintf("Sample%d", 1:150)
@@ -29,6 +30,9 @@ sampleOneClass_v <- "Treatment"
 
 # Colors
 sampleColors_v <- c(brewer.pal(8, "Dark2"), brewer.pal(3, "Paired")[2:3])
+
+# Extra values for plot scaling
+sampleVarPoints_v = sample(1:1000, size = 150, replace = T)
 
 # Plot Stuff
 sampleTitle_v <- "This is a Test"

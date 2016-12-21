@@ -21,7 +21,12 @@ source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 ### Create objects to test
 mappingTest_lsv <- assignMappingSpecs(attribs = sampleAttribs_ls, 
                                       oneclass = sampleOneClass_v,
-                                      colorspec = sampleColors_v)
+                                      colorspec = sampleColors_v,
+                                      varPoints_v = sampleVarPoints_v)
+mappingTest2_lsv <- assignMappingSpecs(attribs = sampleAttribs_ls, 
+                                      oneclass = sampleOneClass_v,
+                                      colorspec = sampleColors_v,
+                                      varPoints_v = NULL)
 compareMapping_dt <- data.table(mappingTest_lsv$sampClasses_v, mappingTest_lsv$plotColors_v)
 
 ### Test them!
@@ -34,6 +39,10 @@ test_that("Mapping Specs are correct", {
   expect_equal(length(mappingTest_lsv$uSampClasses_v), length(mappingTest_lsv$uPlotColors_v))
   # Mapping was appropriately done
   expect_equal(nrow(unique(compareMapping_dt)), length(mappingTest_lsv$uSampClasses_v))
+  # Point scale is appropriate
+  expect_equal(sort(unique(mappingTest_lsv$plotCex_v)), seq(.5,1.9,by=.1))
+  expect_equal(length(mappingTest_lsv$plotCex_v), length(mappingTest_lsv$plotColors_v))
+  expect_equal(mappingTest2_lsv$plotCex_v, 0.6)
 })
 
 ####################################
@@ -149,7 +158,8 @@ plotMDSTest1 <- makeMDSplot(normmat = sampleData_mat,
                             ngenes = sampleNgenes_v,
                             legendPos_v = sampleLegendPos_v,
                             pch = samplePch_v,
-                            xlab = sampleXLab)
+                            xlab = sampleXLab,
+                            varPoints_v = sampleVarPoints_v)
 
 test_that("MDS object is appropriate", {
   # Should be MDS object
