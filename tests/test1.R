@@ -1,7 +1,8 @@
 library(testthat)
 require(limma)
 require(data.table)
-baseDir_v <- "~/stable_repos_11_17/"
+arguments <- commandArgs(trailingOnly = T)
+baseDir_v <- arguments[1]
 source(paste0(baseDir_v, "BcorePlotting/tests/test_data.R"))
 source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 

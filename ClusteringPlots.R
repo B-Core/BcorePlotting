@@ -147,6 +147,12 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
 
 # Map colors to plotting factor and samples
 assignMappingSpecs <- function(attribs, oneclass, colorspec){
+#  attribs:  list of sample classifications to be tracked in clustering.
+#    each list element contains a string vector with one label per sample
+#  oneclass: string name of attribs element to be used in MDS plot
+#  colorspec: vector of color specifiers for colorRampPalette  
+#    colors are generated per sample by their clustering variable values
+  
   # Get factor to plot
   sampClasses_v = attribs[[oneclass]]
   
@@ -167,6 +173,11 @@ assignMappingSpecs <- function(attribs, oneclass, colorspec){
 
 # Replicate color mapping with point types and legend point types
 assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, normmat){
+#  extraParams_ls: list of extra plotting parameters. Name of element must be exact name of default plotting argument
+#  sampClasses_v: vector of length == ncol(normmat) containing grouping identifier for each sample
+#  uSampClasses_v: vector of each unique grouping identifier
+#  normmat: data matrix, with unique & informative names
+  
   # Assign colnames to labels (default), or assign shapes to sample classes (will mirror colors)
   if ("pch" %in% names(extraParams_ls)){
     # pch is ignored in plots if plot labels is non-null
@@ -192,6 +203,14 @@ assignLabelSpecs <- function(extraParams_ls, sampClasses_v, uSampClasses_v, norm
 } # assignLabelSpecs
 
 createLegend <- function(legendPos_v, uSampClasses_v, uPlotColors_v, pchLegend_v){
+#  legendPos_v: "auto" means legend in default configuration at upper limit of user space, can specify
+#    standard options (see ?legend)
+#  uSampClasses_v: vector of each unique grouping identifier
+#  uPlotcolors_v: vector of colors, one for each unique entry in uSampClasses_v 
+#    (should be created using colorRampPalette - see assignMappingSpecs)
+#  pchLegend_v: vector of integers specifying point types. Should be either length of 1 or
+#    length(pchLegend_v) == length(uSampClasses_v)
+
   standardArgs_v = list(legend=uSampClasses_v, col=uPlotColors_v, pch=pchLegend_v, cex=.6)
   # If position not specified, use default
   if (legendPos_v == "auto"){
@@ -214,12 +233,12 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
 #  attribs:  list of sample classifications to be tracked in clustering
 #    each list element contains a string vector with one label per sample
 #  oneclass: string name of attribs element to be used in MDS plot
-#  colorspec is a vector of color specifiers for colorRampPalette  
+#  colorspec: vector of color specifiers for colorRampPalette  
 #    colors are generated per sample by their clustering variable values
 #  plottitle:  title for all plots
 #  subtitle: optional subtitle to add below title on this plot
 #  ngenes: number of "top" genes for plotMDS to select for distance calculation
-#  legend.pos: "auto" means legend in default configuration at upper limit of user space, can specify
+#  legendPos_v: "auto" means legend in default configuration at upper limit of user space, can specify
 #    standard options (see ?legend)
 #  ...: any extra plotting parameters to pass to plotMDS. (change plotting points, axis labels, etc.)
 
@@ -270,11 +289,19 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   return(obj_MDS)
 } # makeMDSplot
 
-setColSpecs <- function(ratiomat, 
-                        attribs, 
-                        setCol_v=NULL, 
-                        colOrder_v=NULL, 
-                        labcoltype=c("colnames","colnums")){
+setColSpecs <- function(ratiomat, attribs, setCol_v=NULL, colOrder_v=NULL, labcoltype=c("colnames","colnums")){
+  #  ratiomat:  ratio data matrix, optimally derived from normmat,
+  #    with unique & informative colnames 
+  #  attribs:  list of sample classifications to be tracked in clustering
+  #    each list element contains a string vector with one label per sample
+  #    set to NA to omit
+  #  setCol_v: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+  #      Defaults to NULL to keep original clustering (hierarchical)
+  #  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
+  #      to NULL so that if setColv is specified alone, output order will be alphabetical.
+  #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
+  # TODO: incorporate normmat as well.
+  
   # Set column labels
   if (any(grepl("colnames", labcoltype,ignore.case = T))){
     labCol_v = colnames(ratiomat)
@@ -283,38 +310,43 @@ setColSpecs <- function(ratiomat,
     colnames(ratiomat) <- labCol_v
   } # fi 
   
-  # If specified sort ratiomat by attrib name found in setCol_v
-  if (is.null(setCol_v)){
-    setCol_v=NULL # Default is to use clustering
+  # Exit here if attribs is NA
+  if (unique(is.na(attribs))){
+    setCol_v=NULL
+    return(list("ratiomat" = ratiomat, "attribs" = attribs, "setCol_v" = setCol_v, "labCol_v" = labCol_v))
   } else {
-    # Combine column indeces with ordering attribute in a data.table TODO: multiple attribs
-    colIndex_v = 1:ncol(ratiomat)
-    temp_dt = as.data.table(cbind("Index" = colIndex_v, "sortBy" = attribs[[setCol_v]]))
-    
-    # Sort
-    if (is.null(colOrder_v)){
-      setkey(temp_dt, `sortBy`) # Default is alphabetical
+    # If specified sort ratiomat by attrib name found in setCol_v
+    if (is.null(setCol_v)){
+      setCol_v=NULL # Default is to use clustering
     } else {
-      temp_dt <- temp_dt[order(match(`sortBy`, colOrder_v))] # Sort by given vector (Note: can be same length of ncol, or can be 1 for each unique attrib)
+      # Combine column indeces with ordering attribute in a data.table TODO: multiple attribs
+      colIndex_v = 1:ncol(ratiomat)
+      temp_dt = as.data.table(cbind("Index" = colIndex_v, "sortBy" = attribs[[setCol_v]]))
+      
+      # Sort
+      if (is.null(colOrder_v)){
+        setkey(temp_dt, `sortBy`) # Default is alphabetical
+      } else {
+        temp_dt <- temp_dt[order(match(`sortBy`, colOrder_v))] # Sort by given vector (Note: can be same length of ncol, or can be 1 for each unique attrib)
+      } # fi
+      
+      # Order everything by sortBy
+      colOut_v = as.numeric(temp_dt[,`Index`]) # Extract from sorted data.table
+      attribs[[setCol_v]] <- temp_dt[,`sortBy`] # Reorder attribs
+      ratiomat = ratiomat[,colnames(ratiomat)[colOut_v]] # Reorder ratiomat
+      labCol_v = labCol_v[colOut_v] # Reorder column labels
+      setCol_v = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
     } # fi
-    
-    # Order everything by sortBy
-    colOut_v = as.numeric(temp_dt[,`Index`]) # Extract from sorted data.table
-    attribs[[setCol_v]] <- temp_dt[,`sortBy`] # Reorder attribs
-    ratiomat = ratiomat[,colnames(ratiomat)[colOut_v]] # Reorder ratiomat
-    labCol_v = labCol_v[colOut_v] # Reorder column labels
-    setCol_v = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
+    # Output
+    return(list("ratiomat" = ratiomat, "attribs" = attribs, "setCol_v" = setCol_v, "labCol_v" = labCol_v))
   } # fi
-  # Output
-  return(list("ratiomat" = ratiomat, "attribs" = attribs, "setCol_v" = setCol_v, "labCol_v" = labCol_v))
-}
+} # setColSpecs
 
 makeHeatmap <-
 function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, annRow = NA, annColors = NA,
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
-#                        labcoltype=c("colnames","colnums") ,
                         setCol_v=NULL, colOrder_v=NULL) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
@@ -333,12 +365,14 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 #  cexRow: rowlabel size for heatmap, set to ~invisible by default
 #  cexCol: collabel size for heatmap, set to aheatmap default by default
 #  annRow: named lists of row annotations; can be single list
-#  annColors:  named lists of annotation colors; names should match names in annRow and attribs
+#  annColors: named lists of annotation colors; names should match names in annRow and attribs
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
 #  setCol_v: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
 #      Defaults to NULL to keep original clustering (hierarchical)
 #  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
 #      to NULL so that if setColv is specified alone, output order will be alphabetical.
+#  NOTE: setCol_v and colOrder_v are only supported when using ratiomat WITHOUT normmat. If you provide a normmat,
+#    be sure to leave these NULL!
 
   # imports
   require(NMF)

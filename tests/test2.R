@@ -1,6 +1,7 @@
 library(testthat)
 require(data.table)
-baseDir_v <- "~/stable_repos_11_17/"
+arguments <- commandArgs(trailingOnly = T)
+baseDir_v <- arguments[1]
 source(paste0(baseDir_v, "BcorePlotting/tests/test_data.R"))
 source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 
@@ -13,10 +14,16 @@ source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
   # Important input/output
       # all vectors related to columns must be same length and values in same order
       # ratio mat order must correspond
+      # if no attribs supplied, setCol_v must be NULL
 
 ### Create object to test
 colSpecs_lsv <- setColSpecs(ratiomat = sampleData_mat, 
                             attribs = sampleAttribs_ls, 
+                            setCol_v = sampleOneClass_v, 
+                            colOrder_v = sampleColOrder_v)
+
+colSpecs2_lsv <- setColSpecs(ratiomat = sampleData_mat, 
+                            attribs = NA, 
                             setCol_v = sampleOneClass_v, 
                             colOrder_v = sampleColOrder_v)
 
@@ -31,8 +38,10 @@ test_that("Column Specifications are Correct", {
   # Mapping of attribs is samples is maintained
   test_dt <- data.table(colnames(colSpecs_lsv$ratiomat), colSpecs_lsv$attribs[[sampleOneClass_v]])
   base_dt <- data.table(colnames(sampleData_mat), sampleAttribs_ls[[sampleOneClass_v]])
-  setkey(base_dt, `V1`); setkey(test_dt, `V1`) # If mapping between these to variables was conserved, should both be equal now
+  setkey(base_dt, `V1`); setkey(test_dt, `V1`) # If mapping between these two variables was conserved, should both be equal now
   expect_identical(test_dt, base_dt)
+  # NULL column cluster (default) if no attribs
+  expect_null(colSpecs2_lsv$setCol_v)
 })
 
 
@@ -56,5 +65,10 @@ test_that("Column Specifications are Correct", {
 # # Cluster
 # makeHeatmap(sampleData_mat,
 #             list("Treatment" = sampleAttribs_ls$Treatment),
+#             plottitle = "This is a Heatmap",
+#             subtitle = "Bottom of the Heatmap")
+# 
+# makeHeatmap(sampleData_mat,
+#             attribs = NA,
 #             plottitle = "This is a Heatmap",
 #             subtitle = "Bottom of the Heatmap")
