@@ -33,6 +33,7 @@ sampleColors_v <- c(brewer.pal(8, "Dark2"), brewer.pal(3, "Paired")[2:3])
 
 # Extra values for plot scaling
 sampleVarPoints_v = sample(1:1000, size = 150, replace = T)
+sampleVarPoints2_v = runif(150)
 
 # Plot Stuff
 sampleTitle_v <- "This is a Test"

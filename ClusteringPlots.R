@@ -168,14 +168,14 @@ assignMappingSpecs <- function(attribs, oneclass, colorspec, varPoints_v=NULL){
   # Set point size output. Either all points are 0.6, or points are scaled 
   if (is.null(varPoints_v)){
     plotCex_v = 0.6
-  } else {
+  } else { # will have to do 0-1 and 1-inf
     # Size range of values
     sizeRange_v = range(varPoints_v)
     # Get step size
-    stepSize_v = (sizeRange_v[2] - sizeRange_v[1] - 1) / 14
-    # Scale varPoints_v by stepSize_v to a range from 1-15
-    scaledVarPoints_v = sapply(varPoints_v, function(x) round((x-(sizeRange_v[1]-1))/stepSize_v)) + 1
-    # Change these to appropriate cex values
+    stepSize_v = (sizeRange_v[2] - sizeRange_v[1]) / 14
+    # Scale
+    scaledVarPoints_v = sapply(varPoints_v, function(x) round((x-(sizeRange_v)[1])/stepSize_v)) + 1
+    # Transform to cex values
     plotCex_v = ((scaledVarPoints_v / 10) + 0.4)
   } # fi
   # Return
