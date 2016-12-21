@@ -270,13 +270,52 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
   return(obj_MDS)
 } # makeMDSplot
 
+setColSpecs <- function(ratiomat, 
+                        attribs, 
+                        setCol_v=NULL, 
+                        colOrder_v=NULL, 
+                        labcoltype=c("colnames","colnums")){
+  # Set column labels
+  if (any(grepl("colnames", labcoltype,ignore.case = T))){
+    labCol_v = colnames(ratiomat)
+  } else {
+    labCol_v = 1:ncol(ratiomat)
+    colnames(ratiomat) <- labCol_v
+  } # fi 
+  
+  # If specified sort ratiomat by attrib name found in setCol_v
+  if (is.null(setCol_v)){
+    setCol_v=NULL # Default is to use clustering
+  } else {
+    # Combine column indeces with ordering attribute in a data.table TODO: multiple attribs
+    colIndex_v = 1:ncol(ratiomat)
+    temp_dt = as.data.table(cbind("Index" = colIndex_v, "sortBy" = attribs[[setCol_v]]))
+    
+    # Sort
+    if (is.null(colOrder_v)){
+      setkey(temp_dt, `sortBy`) # Default is alphabetical
+    } else {
+      temp_dt <- temp_dt[order(match(`sortBy`, colOrder_v))] # Sort by given vector (Note: can be same length of ncol, or can be 1 for each unique attrib)
+    } # fi
+    
+    # Order everything by sortBy
+    colOut_v = as.numeric(temp_dt[,`Index`]) # Extract from sorted data.table
+    attribs[[setCol_v]] <- temp_dt[,`sortBy`] # Reorder attribs
+    ratiomat = ratiomat[,colnames(ratiomat)[colOut_v]] # Reorder ratiomat
+    labCol_v = labCol_v[colOut_v] # Reorder column labels
+    setCol_v = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
+  } # fi
+  # Output
+  return(list("ratiomat" = ratiomat, "attribs" = attribs, "setCol_v" = setCol_v, "labCol_v" = labCol_v))
+}
+
 makeHeatmap <-
 function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, annRow = NA, annColors = NA,
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
-                        labcoltype=c("colnames","colnums") ,
-                        setColv=NULL, colOrder_v=NULL) {
+#                        labcoltype=c("colnames","colnums") ,
+                        setCol_v=NULL, colOrder_v=NULL) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
 #  normmat:  abundance data matrix, optionally used to set color limits
@@ -296,43 +335,44 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 #  annRow: named lists of row annotations; can be single list
 #  annColors:  named lists of annotation colors; names should match names in annRow and attribs
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
-#  setColv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+#  setCol_v: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
 #      Defaults to NULL to keep original clustering (hierarchical)
 #  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
 #      to NULL so that if setColv is specified alone, output order will be alphabetical.
 
   # imports
   require(NMF)
-
-  # set column labels
-  if( any(grepl("colnames",labcoltype,ignore.case=T)) ){
-    labCol = colnames(ratiomat)
-  } else {
-    labCol = 1:ncol(ratiomat)
-  }
-  
-  # Sort matrix columns by attribs
-  if (!is.null(setColv)){
-    # Get column indeces and combine with ordering attribute
-    colIndex = 1:ncol(ratiomat)
-    temp_dt = as.data.table(cbind(colIndex, attribs[[setColv]]))
-    # Sort by ordering attribute
-    if (is.null(colOrder_v)){
-      # Simple alphabetical
-      setkey(temp_dt, "V2")
-    } else {
-      # Specific order
-      temp_dt <- temp_dt[order(match(`V2`, colOrder_v))]
-    }
-    # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
-    colOut = as.numeric(temp_dt$colIndex)
-    attribs[[setColv]] <- temp_dt$V2
-    ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
-    setColv = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
-    rm(temp_dt)
-  } else {
-    setColv = NULL
-  }
+  colSpecs_lsv <- setColSpecs(ratiomat = ratiomat, attribs = attribs, setCol_v = setCol_v, colOrder_v = colOrder_v)
+  ratiomat = colSpecs_lsv$ratiomat
+  # # set column labels
+  # if( any(grepl("colnames",labcoltype,ignore.case=T)) ){
+  #   labCol = colnames(ratiomat)
+  # } else {
+  #   labCol = 1:ncol(ratiomat)
+  # }
+  # 
+  # # Sort matrix columns by attribs
+  # if (!is.null(setCol_v)){
+  #   # Get column indeces and combine with ordering attribute
+  #   colIndex = 1:ncol(ratiomat)
+  #   temp_dt = as.data.table(cbind(colIndex, attribs[[setColv]]))
+  #   # Sort by ordering attribute
+  #   if (is.null(colOrder_v)){
+  #     # Simple alphabetical
+  #     setkey(temp_dt, "V2")
+  #   } else {
+  #     # Specific order
+  #     temp_dt <- temp_dt[order(match(`V2`, colOrder_v))]
+  #   }
+  #   # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
+  #   colOut = as.numeric(temp_dt$colIndex)
+  #   attribs[[setCol_v]] <- temp_dt$V2
+  #   ratiomat = ratiomat[,colnames(ratiomat)[colOut]]
+  #   setColv = NA # Turns off ordering in aheatmap call, which is what we want b/c we ordered mat appropriately
+  #   rm(temp_dt)
+  # } else {
+  #   setCol_v = NULL
+  # }
   # calculate the number of colors in each half vector
   if(length(colorbrew)>1){ # color vector given
     halfbreak = length(colorbrew)/2
@@ -373,9 +413,9 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   # Plot
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
-           annCol=attribs, labCol=colnames(ratiomat),
+           annCol=colSpecs_lsv$attribs, labCol=colSpecs_lsv$labCol_v,
            main=plottitle, annRow=annRow, annColors=annColors,
-           sub=subtitle, Colv=setColv)
+           sub=subtitle, Colv=colSpecs_lsv$setCol_v)
 
   return(ah_ls)
 }

@@ -5,8 +5,8 @@ baseDir_v <- "~/stable_repos_11_17/"
 source(paste0(baseDir_v, "BcorePlotting/tests/test_data.R"))
 source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 
-# Uncomment this to confirm that script is running appropriately and catching failed tests
-# expect_equal(length(mappingTest_lsv$uSampClasses_v), mappingTest_lsv$uPlotColors_v) # supposed to fail
+# Test test - uncomment this to ensure tests are working.
+#expect_equal(2,3)
 
 ########################################################
 ### Check Mapping of plotting factors, samples, etc. ###
@@ -99,7 +99,7 @@ test_that("Default Label Specs are correct:", {
                 # Left coordinate should be less than right-most limit of plotting region
             
 ### Create objects to test
-# Need a plot call for this to work...
+# Need a plot call for this to work...Is there a way to get the legend tests to work without this plot?
 plot(x=1,y=1)
 # Change position and use multiple pch's
 legendTest1_lsv <- createLegend(legendPos_v = sampleLegendPos_v,
@@ -154,3 +154,5 @@ test_that("MDS object is appropriate", {
   # Should be MDS object
   expect_s4_class(plotMDSTest1, "MDS")
 })
+
+dev.off()
