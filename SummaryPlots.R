@@ -7,7 +7,7 @@
 # maplot           --- A plain vanilla MA plot with loess fit line
 # makePairwisePlotMatrix --- A wrapper for GGally::ggpairs for a matrix of MA plots. Incomplete and not incorporated into summary.plots
 #
-# Author: Theresa Lusardi and Julja Burchard
+# Author: Theresa Lusardi, Julja Burchard, and Mark Fisher
 # Started - July, 2016
 #####################################################################################################
 
