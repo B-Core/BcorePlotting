@@ -1,0 +1,88 @@
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                                __  __       _          __  __ _____   _____   _____  _       _         
+                               |  \/  |     | |        |  \/  |  __ \ / ____| |  __ \| |     | |        
+                               | \  / | __ _| | _____  | \  / | |  | | (___   | |__) | | ___ | |_       
+                               | |\/| |/ _` | |/ / _ \ | |\/| | |  | |\___ \  |  ___/| |/ _ \| __|      
+                               | |  | | (_| |   <  __/ | |  | | |__| |____) | | |    | | (_) | |_       
+                               |_|  |_|\__,_|_|\_\___| |_|  |_|_____/|_____/  |_|    |_|\___/ \__|      
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                                                                                                        
+                             ╔═══════════════════════════════INPUTS═══════════════════════════════╗     
+                             ║normmat     - numerical matrix                                      ║     
+                             ║              col = samples, row = observations                     ║     
+                             ║attribs     - list of character vectors (charVec) of                ║     
+                             ║              sample classes.                                       ║     
+                             ║              length == ncol(normmat)                               ║     
+                             ║oneclass    - charVec of plotting attribute.                        ║     
+                             ║              oneclass == names(attribs)[x]                         ║     
+                             ║colorspec   - vector of color specifiers for colorRampPalette.      ║     
+                             ║              length == length(unique(oneclass))                    ║     
+                             ║plottitle   - charVec                                               ║     
+                             ║subtitle    - charVec                                               ║     
+                             ║ngenes      - numeric vector of "top" genes to use in MDS           ║     
+                             ║              distance calculation                                  ║     
+                             ║legendPos_v - charVec stating legend position                       ║     
+                             ║...         - extra plotting parameters                             ║     
+                             ╚════════════════════════════════════════════════════════════════════╝     
+                                                                │                                       
+                                                                │                                       
+                                                                │                                       
+                                                                ▼                                       
+                                              ┌──────────Mapping Specs──────────┐                       
+                                              │                                 │                       
+                                              │   Map colors to samples using   │                       
+                                              │ chosen sample class (oneclass). │                       
+                                              │                                 │                       
+                                              └─────────────────────────────────┘                       
+                                                               │                                        
+                                                               │                                        
+                                                               │                                        
+                                                               ▼                                        
+                                              ┌───────────Label Specs───────────┐                       
+                                              │                                 │                       
+                                              │  Create label parameters using  │                       
+                                              │ chosen sample class (oneclass). │                       
+                                              │                                 │                       
+                                              └─────────────────────────────────┘                       
+                                                               │                                        
+                                                               │                                        
+                                                               ▼                                        
+                                                                                                        
+                                              ┌─────────Make MDS Object─────────┐                       
+                                              │                                 │                       
+                                              │  Create MDS plot object using   │                       
+                                              │   input normmat, colored and    │                       
+                                              │ labeled using oneclass, and any │                       
+                                              │   other plotting parameters.    │                       
+                                              │                                 │                       
+                                              └─────────────────────────────────┘                       
+                                                               │                                        
+                                                               │                                        
+                                                               │                                        
+                                                               ▼                                        
+                                              ┌────────────Add Legend───────────┐                       
+                                              │                                 │                       
+                                              │ Create legend with appropriate  │                       
+                                              │   colors and symbols based on   │                       
+                                              │ Mapping Specs, Label Specs, and │                       
+                                              │          legendPos_v.           │                       
+                                              │                                 │                       
+                                              └─────────────────────────────────┘                       
+                                                               │                                        
+                                                               │                                        
+                                                               │                                        
+                                                               ▼                                        
+                                              ╔══════════════Output═════════════╗                       
+                                              ║                                 ║                       
+                                              ║        Return MDS object        ║▒▒                     
+                                              ║                                 ║▒▒                     
+                                              ╚═════════════════════════════════╝▒▒                     
+                                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                     
+                                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                     
