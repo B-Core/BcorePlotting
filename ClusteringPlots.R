@@ -373,7 +373,7 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   # Plot
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
-           annCol=attribs, labCol=colnames(ratiomat),
+           annCol=attribs, labCol=labCol,
            main=plottitle, annRow=annRow, annColors=annColors,
            sub=subtitle, Colv=setColv)
 
