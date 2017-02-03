@@ -14,7 +14,6 @@
 ##Please be on the lookout for #Attn. and #Feedback tags in lines that warrant them.
 
 summary.plots <-
-<<<<<<< HEAD
     function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE)
               whichPlots_v = c("box", "scatter", "density", "spread")) {
     #' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
