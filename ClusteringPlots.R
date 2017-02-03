@@ -273,13 +273,13 @@ function (normmat, attribs, oneclass, colorspec, plottitle,
                                         oneclass,
                                         colorspec,
                                         varPoints_v)
-  
+
   # Replicate color mapping with point types and legend point types
   labelSpecs_lsv <- assignLabelSpecs(extraParams_ls, 
                                      mappingSpecs_lsv$sampClasses_v, 
                                      mappingSpecs_lsv$uSampClasses_v, 
                                      normmat)
-  
+
   # Update original input with assignLabelSpecs output
   extraParams_ls$pch = labelSpecs_lsv$pch
 
