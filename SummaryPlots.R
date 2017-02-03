@@ -14,7 +14,7 @@
 ##Please be on the lookout for #Attn. and #Feedback tags in lines that warrant them.
 
 summary.plots <-
-    function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE)
+    function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE,
               whichPlots_v = c("box", "scatter", "density", "spread")) {
     #' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
     #' @description summary.plots currently wraps a boxplot (1), scatterplot (2), density plot (3), sd vs. intensity plot (4), and MA plot (5). The MA plot behavior plots all sample columns in a matrix vs. one BaseSample.
