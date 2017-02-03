@@ -12,7 +12,8 @@
 
 
 summary.plots <-
-function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE) {
+function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE,
+          whichPlots_v = c("box", "scatter", "density", "spread")) {
 #' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
 #' @description summary.plots currently wraps a scatterplot
 #' @param rawmat a matrix of raw data. Should have minimal background addition and be scaled according to normalized data. In other words, rawmat should be the alograw slot of a normMatrix() call.
@@ -31,6 +32,7 @@ function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdat
 #' @param expand.2D a numeric multiplier of histbins for 2D histogram
 #' @param filesep a string to designate file separators #Feedback not sure
 #' @param plotIDOffset a number to offset the plotID values... Can be used to organize
+#' @param whichPlots_v vector of plots to make. Can be any or all of: "box", "scatter", "density", "spread"
 #' @return if verbose is TRUE, a list of ___
 #' @export
 
@@ -56,184 +58,191 @@ function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdat
   u.col.classes = unique(colvec) 
 
 # Boxplot of all data
-  plotID = 1 + plotIDOffset
-  plotDesc = 'boxplot'
-  if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
-  if(plot2file) {
-  png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
-      width=5,height=5.4,units="in",res=144)
-  }
-  boxplot(normmat, main = plotdata$plottitle, border=colvec, las = 2)
-  if(plot2file) dev.off()
-
-# Scatterplot of all data
-  plotID = 2 + plotIDOffset
-  plotDesc = 'scatter'
-  if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
-  if(plot2file) {
+  if ("box" %in% whichPlots_v){
+    plotID = 1 + plotIDOffset
+    plotDesc = 'boxplot'
+    if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
+    if(plot2file) {
     png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
         width=5,height=5.4,units="in",res=144)
-  }
-  yl = range(normmat,na.rm=T); xl = range(rawmat,na.rm=T)
-  plot(x=0, y=0, type="n", xlim=xl, ylim=yl, pch='.', xlab='', ylab = '')
-  title(xlab='log2(raw + background)',
-        ylab = paste(mynorm, 'normalization'),
-        main = plotdata$plottitle)
-  for(j in 1:ncol(rawmat) ){
-    points(rawmat[,j], normmat[,j], pch='.', col=colvec[j])
-  }
-  legend(x="topleft", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.5)
-  if(plot2file) dev.off()
-
-# Density plot
-  plotID = 3 + plotIDOffset
-  plotDesc = 'density'
-  if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
-  if(plot2file) {
-    png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
-        width=5,height=5.4,units="in",res=144)
-  }
-
-  dl = NULL; yl = c(0,0); xl = range(normmat, na.rm=T)
-  for( j in 1:ncol(normmat) ) {
-    dl = c(dl,list(density(normmat[,j],from=xl[1],to=xl[2],n=histbins,na.rm=T)))
-    dl[[j]]$y = dl[[j]]$y/sum(dl[[j]]$y)
-    yl = range(yl,dl[[j]]$y)
-  }
-    plot(x=0,y=0,type="n",xlim=xl,ylim=yl,
-         xlab=paste(mynorm,' normalized intensity'),
-         ylab='Fraction of features (smoothed)',
-         main = plotdata$plottitle)
-
-  for(j in 1:ncol(normmat) ){
-    lines(dl[[j]]$x,dl[[j]]$y,lty=(j%%ncol(normmat)) + 1, col=colvec[j])
-  }
-  legend(x="topright", legend=u.samp.classes, col=u.col.classes, lty=1, lwd=2, cex=.6)
-                                                                                  
-  if(plot2file) dev.off()
-
-# SD plot
-  plotID = 4 + plotIDOffset
-  plotDesc = 'spread'
-  if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
-  if(plot2file) {
-    png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
-        width=5,height=5.4,units="in",res=144)
-  }
-
-  # calculate group-wise SDs per gene
-  sdmat = NULL; int_mat = NULL
-  # find rows informative on SD for all classes
-  row_mk = logical(nrow(normmat)); row_mk[] = TRUE
-  # Create a mask indicating which rows have at least 1 measurement per samp.class
-  for( myclass in u.samp.classes ){
-    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class
-      warning(paste0(myclass, " is represented by only one sample. Be aware that this may be problematic for downstream analyses."))
-      row_mk = row_mk & !(is.na(normmat[,samp.classes==myclass]))
-    }else{
-    row_mk = row_mk & rowSums(!is.na(normmat[,samp.classes==myclass]))>1
-    if(verbose) {message(sprintf("Masked rows for %s = %i", myclass, sum(row_mk)))}
     }
-  }
-  # calculate mean and SDs for intensities by samp.classes
-  for( myclass in u.samp.classes ){
-    if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class. Can't take rowMeans of one column.
-      int_mat = cbind(int_mat, normmat[row_mk,samp.classes==myclass])
-    }else{
-      int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass],na.rm=T))
-    }
-    if(sum(samp.classes==myclass)>1){
-      sdmat = cbind(sdmat, sapply(which(row_mk),
-        function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
-    } else {
-      sdmat = cbind(sdmat, rep(0,nrow(normmat)) )
-    }
-  }
-  colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes #Feedback my u.samp.classes is length 4 while dim sdmat is 0,5.?
-  rownames(sdmat) = rownames(normmat)[row_mk]
-
-  # colors
-  # bright version of each color: increase to cmult% of distance to 100%
-  cmult = 0.8
-  clower = rgb(t( cmult*(255 - col2rgb(colvec)) + col2rgb(colvec) )/255 )
-  # build color list
-  collist = NULL; ncols = 64
-  for(j in 1:ncol(sdmat) ){
-    if(verbose) {message(sprintf("Class %s, n(sd=0) %i", colnames(sdmat)[j], sum(sdmat[, j]==0)))}
-    # color axis for each group, lighter at low end & mostly transparent 
-    col1 = unique(clower[samp.classes==colnames(sdmat)[j] ])[1]
-    col2 = unique(colvec[samp.classes==colnames(sdmat)[j] ])[1]
-    collist = c(collist, list(colorRampPalette( colors=c( adjustcolor(col1, alpha.f=.85), adjustcolor( col2, alpha.f=0.85) ), alpha=T)(ncols) ) )
-  }
-
-  # 2D histogram
-  nbins = histbins*expand.2D
-  # Set the y (SD) and x (mean) bin sizes based on the range of the masked abundance data
-  # bin[n:(n+1)] defines the range of values included in the bin
-  # plt[n] defines the center point for plotting
-  yl = range(sdmat, na.rm=T)
-  ybin = seq(from=yl[1],to=yl[2],length.out=nbins+1)
-  yplt = filter(ybin,filter=c(.5,.5),sides=1)[2:(nbins+1)]
-  xl = range(normmat[row_mk,], na.rm=T)
-  xbin = seq(from=xl[1],to=xl[2],length.out=nbins+1) 
-  xplt = filter(xbin,filter=c(.5,.5),sides=1)[2:(nbins+1)]
-  cmax = log2(nrow(sdmat)/nbins)
-  # calculate x, y, color
-  freq = NULL;
-  for(i in 1:ncol( sdmat ) ){
-    # frequency of abundance vs SD as binned
-    freq[[i]] = as.data.table(table( findInterval(int_mat[,i],xbin,all.inside=T), findInterval(sdmat[,i],ybin,all.inside=T) ))
-    freq[[i]] = freq[[i]][,V1:=as.numeric(V1)]
-    freq[[i]] = freq[[i]][,V2:=as.numeric(V2)]
-    freq[[i]] = freq[[i]][,N:=log2(N+1)]
-    # transform to color numbers
-    freq[[i]] = freq[[i]][,Nn := round((ncols-1)*N/cmax)+1]
-    freq[[i]][Nn>ncols,Nn := ncols]
-    # trim empty bins
-    freq[[i]] = freq[[i]][N>0,]
-  }
+    boxplot(normmat, main = plotdata$plottitle, border=colvec, las = 2)
+    if(plot2file) dev.off()
+  } # boxplot
   
-  # make single x, y, color vecs -- alpha seems to have limits
-  myx = NULL; myy = NULL; myc = NULL
-  for(i in 1:ncol( sdmat ) ){
-    myx = c(myx,freq[[i]]$V1)
-    myy = c(myy,freq[[i]]$V2)
-    myc = c(myc,collist[[i]][freq[[i]]$Nn])
-  }
-  randx = sample(length(myx))
-  # plot
-    plot(x=0,y=0,type="n",xlim=xl,ylim=yl,
-         xlab=paste(mynorm,' normalized intensity'),
-         ylab='Standard deviation',
-         main = plotdata$plottitle)
+# Scatterplot of all data
+  if ("scatter" %in% whichPlots_v){
+    plotID = 2 + plotIDOffset
+    plotDesc = 'scatter'
+    if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
+    if(plot2file) {
+      png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
+          width=5,height=5.4,units="in",res=144)
+    }
+    yl = range(normmat,na.rm=T); xl = range(rawmat,na.rm=T)
+    plot(x=0, y=0, type="n", xlim=xl, ylim=yl, pch='.', xlab='', ylab = '')
+    title(xlab='log2(raw + background)',
+          ylab = paste(mynorm, 'normalization'),
+          main = plotdata$plottitle)
+    for(j in 1:ncol(rawmat) ){
+      points(rawmat[,j], normmat[,j], pch='.', col=colvec[j])
+    }
+    legend(x="topleft", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.5)
+    if(plot2file) dev.off()
+    } # scatterplot
+  
+  # Density plot
+  if ("density" %in% whichPlots_v){
+    plotID = 3 + plotIDOffset
+    plotDesc = 'density'
+    if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
+    if(plot2file) {
+      png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
+          width=5,height=5.4,units="in",res=144)
+    }
 
-  if(verbose) {
-    message(sprintf("lengths: randx %i, myx %i, myy %i, myc %i",
-            length(randx), length(myx), length(myy), length(myc)))
-    message(sprintf("lengths:  xplt %i, yplt %i",
-            length(xplt), length(yplt)))
-    message(sprintf("lengths:  my[rand] x %i, y %i, c %i",
-            length(myx[randx]), length(myy[randx]), length(myc[randx])))
-    message(sprintf("lengths:  plt[my[rand]] x %i, y %i, c %i",
-            length(xplt[myx[randx]]), length(yplt[myy[randx]]), length(myc[randx])))
-return(list(randx=randx, myx=myx, myx.randx=myx[randx], xplt=xplt, xplt.myx.randx=xplt[myx[randx]], myy=myy))
-  }
-
-  points(xplt[myx[randx]],yplt[myy[randx]],col=myc[randx],pch=15,cex=.6)
-
-  # add loess fits as in Cope et al. Bioinformatics 20:323-331 (2004), Fig.2
-  for(i in 1:ncol(sdmat) ){
-    lfit = lowess( y = sdmat[,i], x = int_mat[,i], f=0.2, delta=(1/histbins)*diff(range(int_mat[,i])) )
-    # plot heavy lines a bit darker than regular colors
-    # lowess returns list elements x and y in plotting order
-    lines( lfit$x, lfit$y, col=adjustcolor(u.col.classes[i],red.f=.75,green.f=.75,blue.f=.75), lwd=3 )
-  }
-
-  # add legend
-  legend(x="topright", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
-
-  if(plot2file) dev.off()
-
+    dl = NULL; yl = c(0,0); xl = range(normmat, na.rm=T)
+    for( j in 1:ncol(normmat) ) {
+      dl = c(dl,list(density(normmat[,j],from=xl[1],to=xl[2],n=histbins,na.rm=T)))
+      dl[[j]]$y = dl[[j]]$y/sum(dl[[j]]$y)
+      yl = range(yl,dl[[j]]$y)
+    }
+      plot(x=0,y=0,type="n",xlim=xl,ylim=yl,
+           xlab=paste(mynorm,' normalized intensity'),
+           ylab='Fraction of features (smoothed)',
+           main = plotdata$plottitle)
+  
+    for(j in 1:ncol(normmat) ){
+      lines(dl[[j]]$x,dl[[j]]$y,lty=(j%%ncol(normmat)) + 1, col=colvec[j])
+    }
+    legend(x="topright", legend=u.samp.classes, col=u.col.classes, lty=1, lwd=2, cex=.6)
+                                                                                    
+    if(plot2file) dev.off()
+  } # density
+  
+# SD plot
+  if ("spread" %in% whichPlots_v){
+    plotID = 4 + plotIDOffset
+    plotDesc = 'spread'
+    if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
+    if(plot2file) {
+      png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
+          width=5,height=5.4,units="in",res=144)
+    }
+  
+    # calculate group-wise SDs per gene
+    sdmat = NULL; int_mat = NULL
+    # find rows informative on SD for all classes
+    row_mk = logical(nrow(normmat)); row_mk[] = TRUE
+    # Create a mask indicating which rows have at least 1 measurement per samp.class
+    for( myclass in u.samp.classes ){
+      if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class
+        warning(paste0(myclass, " is represented by only one sample. Be aware that this may be problematic for downstream analyses."))
+        row_mk = row_mk & !(is.na(normmat[,samp.classes==myclass]))
+      }else{
+      row_mk = row_mk & rowSums(!is.na(normmat[,samp.classes==myclass]))>1
+      if(verbose) {message(sprintf("Masked rows for %s = %i", myclass, sum(row_mk)))}
+      }
+    }
+    # calculate mean and SDs for intensities by samp.classes
+    for( myclass in u.samp.classes ){
+      if(sum(samp.classes==myclass)==1){ #Catches those cases where only one sample is in a class. Can't take rowMeans of one column.
+        int_mat = cbind(int_mat, normmat[row_mk,samp.classes==myclass])
+      }else{
+        int_mat = cbind(int_mat, rowMeans(normmat[row_mk,samp.classes==myclass],na.rm=T))
+      }
+      if(sum(samp.classes==myclass)>1){
+        sdmat = cbind(sdmat, sapply(which(row_mk),
+          function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
+      } else {
+        sdmat = cbind(sdmat, rep(0,nrow(normmat)) )
+      }
+    }
+    colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes #Feedback my u.samp.classes is length 4 while dim sdmat is 0,5.?
+    rownames(sdmat) = rownames(normmat)[row_mk]
+  
+    # colors
+    # bright version of each color: increase to cmult% of distance to 100%
+    cmult = 0.8
+    clower = rgb(t( cmult*(255 - col2rgb(colvec)) + col2rgb(colvec) )/255 )
+    # build color list
+    collist = NULL; ncols = 64
+    for(j in 1:ncol(sdmat) ){
+      if(verbose) {message(sprintf("Class %s, n(sd=0) %i", colnames(sdmat)[j], sum(sdmat[, j]==0)))}
+      # color axis for each group, lighter at low end & mostly transparent 
+      col1 = unique(clower[samp.classes==colnames(sdmat)[j] ])[1]
+      col2 = unique(colvec[samp.classes==colnames(sdmat)[j] ])[1]
+      collist = c(collist, list(colorRampPalette( colors=c( adjustcolor(col1, alpha.f=.85), adjustcolor( col2, alpha.f=0.85) ), alpha=T)(ncols) ) )
+    }
+  
+    # 2D histogram
+    nbins = histbins*expand.2D
+    # Set the y (SD) and x (mean) bin sizes based on the range of the masked abundance data
+    # bin[n:(n+1)] defines the range of values included in the bin
+    # plt[n] defines the center point for plotting
+    yl = range(sdmat, na.rm=T)
+    ybin = seq(from=yl[1],to=yl[2],length.out=nbins+1)
+    yplt = filter(ybin,filter=c(.5,.5),sides=1)[2:(nbins+1)]
+    xl = range(normmat[row_mk,], na.rm=T)
+    xbin = seq(from=xl[1],to=xl[2],length.out=nbins+1) 
+    xplt = filter(xbin,filter=c(.5,.5),sides=1)[2:(nbins+1)]
+    cmax = log2(nrow(sdmat)/nbins)
+    # calculate x, y, color
+    freq = NULL;
+    for(i in 1:ncol( sdmat ) ){
+      # frequency of abundance vs SD as binned
+      freq[[i]] = as.data.table(table( findInterval(int_mat[,i],xbin,all.inside=T), findInterval(sdmat[,i],ybin,all.inside=T) ))
+      freq[[i]] = freq[[i]][,V1:=as.numeric(V1)]
+      freq[[i]] = freq[[i]][,V2:=as.numeric(V2)]
+      freq[[i]] = freq[[i]][,N:=log2(N+1)]
+      # transform to color numbers
+      freq[[i]] = freq[[i]][,Nn := round((ncols-1)*N/cmax)+1]
+      freq[[i]][Nn>ncols,Nn := ncols]
+      # trim empty bins
+      freq[[i]] = freq[[i]][N>0,]
+    }
+    
+    # make single x, y, color vecs -- alpha seems to have limits
+    myx = NULL; myy = NULL; myc = NULL
+    for(i in 1:ncol( sdmat ) ){
+      myx = c(myx,freq[[i]]$V1)
+      myy = c(myy,freq[[i]]$V2)
+      myc = c(myc,collist[[i]][freq[[i]]$Nn])
+    }
+    randx = sample(length(myx))
+    # plot
+      plot(x=0,y=0,type="n",xlim=xl,ylim=yl,
+           xlab=paste(mynorm,' normalized intensity'),
+           ylab='Standard deviation',
+           main = plotdata$plottitle)
+  
+    if(verbose) {
+      message(sprintf("lengths: randx %i, myx %i, myy %i, myc %i",
+              length(randx), length(myx), length(myy), length(myc)))
+      message(sprintf("lengths:  xplt %i, yplt %i",
+              length(xplt), length(yplt)))
+      message(sprintf("lengths:  my[rand] x %i, y %i, c %i",
+              length(myx[randx]), length(myy[randx]), length(myc[randx])))
+      message(sprintf("lengths:  plt[my[rand]] x %i, y %i, c %i",
+              length(xplt[myx[randx]]), length(yplt[myy[randx]]), length(myc[randx])))
+  return(list(randx=randx, myx=myx, myx.randx=myx[randx], xplt=xplt, xplt.myx.randx=xplt[myx[randx]], myy=myy))
+    }
+  
+    points(xplt[myx[randx]],yplt[myy[randx]],col=myc[randx],pch=15,cex=.6)
+  
+    # add loess fits as in Cope et al. Bioinformatics 20:323-331 (2004), Fig.2
+    for(i in 1:ncol(sdmat) ){
+      lfit = lowess( y = sdmat[,i], x = int_mat[,i], f=0.2, delta=(1/histbins)*diff(range(int_mat[,i])) )
+      # plot heavy lines a bit darker than regular colors
+      # lowess returns list elements x and y in plotting order
+      lines( lfit$x, lfit$y, col=adjustcolor(u.col.classes[i],red.f=.75,green.f=.75,blue.f=.75), lwd=3 )
+    }
+  
+    # add legend
+    legend(x="topright", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
+  
+    if(plot2file) dev.off()
+  } # spread
 } #END summary.plots
 
 
