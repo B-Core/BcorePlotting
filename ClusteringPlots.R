@@ -101,9 +101,9 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
     rowmask = logical(nrow(ratiomat)); rowmask[]= TRUE
   }
   # adjust rowmask if needed to keep problem rows out of plots
-  NAmask = rowSums(is.na(ratiomat)) <= NAtol
+  NAmask = rowSums(is.na(ratiomat)) <= NAtol # fewer NAs than tolerance
   SDmask = sapply(1:nrow(ratiomat), 
-                  function(x){sd(ratiomat[x,],na.rm=T)}) >= SDtol
+                  function(x){sd(ratiomat[x,],na.rm=T)}) >= SDtol # greater standard deviation than tolerance
   SDmask[ is.na(SDmask) ] = FALSE # in case of all-NA rows
   rowmask = rowmask & NAmask & SDmask
   # report selection size
@@ -461,13 +461,15 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   } else { # use outer limits only
     colorbreaks=c(c.min0,(c.min0+c.lim0)/2, c.lim0)
   }
+  # If quantiles are the same for multiple columns, will have non-unique breaks which will fail
+  colorbreaks <- unique(colorbreaks)
 
   # Plot
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
            annCol=colSpecs_lsv$attribs, labCol=colSpecs_lsv$labCol_v,
            main=plottitle, annRow=annRow, annColors=annColors,
-           sub=subtitle, Colv=colSpecs_lsv$setCol_v)
+           sub=subtitle, Colv=colSpecs_lsv$setCol_v, Rowv = NULL)
 
   return(ah_ls)
 }
