@@ -1,12 +1,13 @@
 library(testthat)
 require(limma)
 require(data.table)
-baseDir_v <- "~/stable_repos_11_17/"
+arguments <- commandArgs(trailingOnly = T)
+baseDir_v <- arguments[1]
 source(paste0(baseDir_v, "BcorePlotting/tests/test_data.R"))
 source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 
-# Uncomment this to confirm that script is running appropriately and catching failed tests
-# expect_equal(length(mappingTest_lsv$uSampClasses_v), mappingTest_lsv$uPlotColors_v) # supposed to fail
+# Test test - uncomment this to ensure tests are working.
+#expect_equal(2,3)
 
 ########################################################
 ### Check Mapping of plotting factors, samples, etc. ###
@@ -20,7 +21,16 @@ source(paste0(baseDir_v, "BcorePlotting/ClusteringPlots.R"))
 ### Create objects to test
 mappingTest_lsv <- assignMappingSpecs(attribs = sampleAttribs_ls, 
                                       oneclass = sampleOneClass_v,
-                                      colorspec = sampleColors_v)
+                                      colorspec = sampleColors_v,
+                                      varPoints_v = sampleVarPoints_v)
+mappingTest2_lsv <- assignMappingSpecs(attribs = sampleAttribs_ls, 
+                                      oneclass = sampleOneClass_v,
+                                      colorspec = sampleColors_v,
+                                      varPoints_v = sampleVarPoints2_v)
+mappingTest3_lsv <- assignMappingSpecs(attribs = sampleAttribs_ls, 
+                                      oneclass = sampleOneClass_v,
+                                      colorspec = sampleColors_v,
+                                      varPoints_v = NULL)
 compareMapping_dt <- data.table(mappingTest_lsv$sampClasses_v, mappingTest_lsv$plotColors_v)
 
 ### Test them!
@@ -33,6 +43,13 @@ test_that("Mapping Specs are correct", {
   expect_equal(length(mappingTest_lsv$uSampClasses_v), length(mappingTest_lsv$uPlotColors_v))
   # Mapping was appropriately done
   expect_equal(nrow(unique(compareMapping_dt)), length(mappingTest_lsv$uSampClasses_v))
+  # Point scale is appropriate
+  expect_true(unique(unique(mappingTest_lsv$plotCex_v) <= 1.9))
+  expect_true(unique(unique(mappingTest_lsv$plotCex_v) >= 0.5))
+  expect_true(unique(as.character(unique(mappingTest_lsv$plotCex_v)) %in% as.character(seq(.5,1.9, by = .1)))) # have to do char here
+  expect_true(unique(as.character(unique(mappingTest2_lsv$plotCex_v)) %in% as.character(seq(.5,1.9, by = .1)))) 
+  expect_equal(length(mappingTest_lsv$plotCex_v), length(mappingTest_lsv$plotColors_v))
+  expect_equal(mappingTest3_lsv$plotCex_v, 0.6)
 })
 
 ####################################
@@ -99,7 +116,7 @@ test_that("Default Label Specs are correct:", {
                 # Left coordinate should be less than right-most limit of plotting region
             
 ### Create objects to test
-# Need a plot call for this to work...
+# Need a plot call for this to work...Is there a way to get the legend tests to work without this plot?
 plot(x=1,y=1)
 # Change position and use multiple pch's
 legendTest1_lsv <- createLegend(legendPos_v = sampleLegendPos_v,
@@ -148,9 +165,12 @@ plotMDSTest1 <- makeMDSplot(normmat = sampleData_mat,
                             ngenes = sampleNgenes_v,
                             legendPos_v = sampleLegendPos_v,
                             pch = samplePch_v,
-                            xlab = sampleXLab)
+                            xlab = sampleXLab,
+                            varPoints_v = sampleVarPoints_v)
 
 test_that("MDS object is appropriate", {
   # Should be MDS object
   expect_s4_class(plotMDSTest1, "MDS")
 })
+
+dev.off()
