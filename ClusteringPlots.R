@@ -275,8 +275,8 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
                         clim.pct=.99, clim_fix=NULL, colorbrew="-PiYG:64", 
                         cexRow=0.00001, annRow = NA, annColors = NA,
                         cexCol=min(0.2 + 1/log10(ncol(ratiomat)), 1.2),
-                        labcoltype=c("colnames","colnums") ,
-                        setColv=NULL, colOrder_v=NULL) {
+                        labcoltype=c("colnames","colnums") , labRowType = NULL,
+                        setColv=NULL, setRowv=NULL, colOrder_v=NULL, inclLegend = TRUE) {
 # This function makes a heatmap of ratio data, displaying experimental design values as tracks
 # Uses the matrix values to cluster the data
 #  normmat:  abundance data matrix, optionally used to set color limits
@@ -296,8 +296,10 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 #  annRow: named lists of row annotations; can be single list
 #  annColors:  named lists of annotation colors; names should match names in annRow and attribs
 #  labcoltype: colnames to show ratiomat column names, colnums to show col #s
+#  labRow:  labels for rows; default NULL doesn't label
 #  setColv: name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
 #      Defaults to NULL to keep original clustering (hierarchical)
+# setRowv: pass through to Rowv argument of aheatmap. Default to NULL, hierarchical clustering
 #  colOrder_v: Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
 #      to NULL so that if setColv is specified alone, output order will be alphabetical.
 
@@ -305,6 +307,22 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   require(NMF)
 
   # set column labels
+  if( any(grepl("colnames",labcoltype,ignore.case=T)) ){
+    labCol = colnames(ratiomat)
+  } else {
+    labCol = 1:ncol(ratiomat)
+  }
+  
+  # set row labels
+  if(!is.null(labRowType)) {
+    if (length(labRowType) == nrow(ratiomat)) {
+      labRow = labRowType
+      cexRow = 1
+    } else {
+      labRow = rownames(ratiomat)
+    }
+  } else { labRow = NULL }
+  
   if( any(grepl("colnames",labcoltype,ignore.case=T)) ){
     labCol = colnames(ratiomat)
   } else {
@@ -324,6 +342,7 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
       # Specific order
       temp_dt <- temp_dt[order(match(`V2`, colOrder_v))]
     }
+    
     # Assign variable to pass to Colv in aheatmap function call, also reorder attribs and ratiomat to correspond
     colOut = as.numeric(temp_dt$colIndex)
     attribs[[setColv]] <- temp_dt$V2
@@ -373,9 +392,9 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
   # Plot
   ah_ls = aheatmap(ratiomat, cexRow=cexRow, 
            color=colorbrew, breaks=colorbreaks,
-           annCol=attribs, labCol=labCol,
+           annCol=attribs, labCol=labCol, labRow=labRow,
            main=plottitle, annRow=annRow, annColors=annColors,
-           sub=subtitle, Colv=setColv)
+           sub=subtitle, Colv=setColv, Rowv = setRowv, annLegend = inclLegend)
 
   return(ah_ls)
 }
