@@ -14,7 +14,8 @@
 ##Please be on the lookout for #Attn. and #Feedback tags in lines that warrant them.
 
 summary.plots <-
-  function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE) {
+    function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE,
+              whichPlots_v = c("box", "scatter", "density", "spread")) {
     #' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
     #' @description summary.plots currently wraps a boxplot (1), scatterplot (2), density plot (3), sd vs. intensity plot (4), and MA plot (5). The MA plot behavior plots all sample columns in a matrix vs. one BaseSample.
     #' @param rawmat a matrix of raw data. Should have minimal background addition and be scaled according to normalized data. In other words, rawmat should be the alograw slot of a normMatrix() call.
@@ -64,6 +65,7 @@ summary.plots <-
     u.col.classes = unique(colvec) 
     
     # Boxplot of all data
+    if ("box" %in% whichPlots_v){
     plotID = 1 + plotIDOffset
     plotDesc = 'boxplot'
     if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
@@ -73,8 +75,10 @@ summary.plots <-
     }
     boxplot(normmat, main = plotdata$plottitle, border=colvec, las = 2)
     if(plot2file) dev.off()
+    } # boxplot
     
     # Scatterplot of all data
+    if ("scatter" %in% whichPlots_v){
     plotID = 2 + plotIDOffset
     plotDesc = 'scatter'
     if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
@@ -92,8 +96,10 @@ summary.plots <-
     }
     legend(x="topleft", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.5)
     if(plot2file) dev.off()
-    
-    # Density plot
+    } # scatterplot
+  
+  # Density plot
+  if ("density" %in% whichPlots_v){
     plotID = 3 + plotIDOffset
     plotDesc = 'density'
     if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
@@ -101,7 +107,7 @@ summary.plots <-
       png(filename = sprintf('%s%i_%s_%s.png', plotdata$plotdir, plotID, plotdata$plotbase, plotDesc),
           width=5,height=5.4,units="in",res=144)
     }
-    
+
     dl = NULL; yl = c(0,0); xl = range(normmat, na.rm=T)
     for( j in 1:ncol(normmat) ) {
       dl = c(dl,list(density(normmat[,j],from=xl[1],to=xl[2],n=histbins,na.rm=T)))
@@ -119,9 +125,11 @@ summary.plots <-
     legend(x="topright", legend=u.samp.classes, col=u.col.classes, lty=1, lwd=2, cex=.6)
     
     if(plot2file) dev.off()
+  } # density
     
     # SD plot
     # browser()
+    if ("spread" %in% whichPlots_v){
     plotID = 4 + plotIDOffset
     plotDesc = 'spread'
     if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))}
@@ -174,7 +182,7 @@ summary.plots <-
       col2 = unique(colvec[samp.classes==colnames(sdmat)[j] ])[1]
       collist = c(collist, list(colorRampPalette( colors=c( adjustcolor(col1, alpha.f=.85), adjustcolor( col2, alpha.f=0.85) ), alpha=T)(ncols) ) )
     }
-    
+
     # 2D histogram
     nbins = histbins*expand.2D
     # Set the y (SD) and x (mean) bin sizes based on the range of the masked abundance data
@@ -241,7 +249,8 @@ summary.plots <-
     legend(x="topright", legend=u.samp.classes, col=u.col.classes, pch=16, cex=.6)
     
     if(plot2file) dev.off()
-    
+    } # spread
+                  
     ##Add MA plots and handling potential input of BaseSample
     if(MAplotOpt){
       # if(verbose) {message(sprintf("Plotting %s, ID = %i", plotDesc, plotID))} #Feedback #Attn. buggy?
@@ -273,8 +282,6 @@ summary.plots <-
     }
     return(returnVal)
   } #END summary.plots
-
-
 
 scatterplot <-
   function (normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0) {
