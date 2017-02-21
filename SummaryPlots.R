@@ -14,7 +14,7 @@
 ##Please be on the lookout for #Attn. and #Feedback tags in lines that warrant them.
 
 summary.plots <-
-    function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE,
+    function (rawmat, normmat, mynorm, samp.labels, samp.classes, colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5, SDrange=7, filesep="/", plotIDOffset = 0, verbose = FALSE, BaseSample = NULL, yrange = NULL, MAplotOpt=FALSE,
               whichPlots_v = c("box", "scatter", "density", "spread")) {
     #' A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data
     #' @description summary.plots currently wraps a boxplot (1), scatterplot (2), density plot (3), sd vs. intensity plot (4), and MA plot (5). The MA plot behavior plots all sample columns in a matrix vs. one BaseSample.
@@ -32,6 +32,7 @@ summary.plots <-
     #'  plottitle:  title for all plots
     #' @param histbins default number of bins for density plot
     #' @param expand.2D a numeric multiplier of histbins for 2D histogram
+    #' @param SDrange maximum SD to plot in spread plots
     #' @param filesep a string to designate file separators #Feedback not sure
     #' @param plotIDOffset a number the specifies offset value for the plot ID. Default value is 0.
     #' @param BaseSample a string of the column/sample name that will be used as the sample to which other samples will be compared for MA plots.
@@ -218,6 +219,10 @@ summary.plots <-
       myc = c(myc,collist[[i]][freq[[i]]$Nn])
     }
     randx = sample(length(myx))
+    # adjust ylim if indicated
+    if( exists("SDrange") & !is.null(SDrange) & SDrange>yl[1] ){
+      yl[2] = SDrange
+    }
     # plot
     plot(x=0,y=0,type="n",xlim=xl,ylim=yl,
          xlab=paste(mynorm,' normalized intensity'),
