@@ -101,18 +101,20 @@ function(norm_x, p_mat, q_list, metadata, plotdata, plot2file = TRUE,
 
     if (!skipFac) {
       message(sprintf("Factor %s to qcQvalues!", factor))
-      qcQvalues(norm_x = norm_x, pvalue_v = p_mat[,factor], obj_qvalue = q_list[[factor]],
-                qcut = qcut, attribs = metadata, oneclass = oneclass, plotdata = plotdata,
-                colorspec = colorspec, histbins=histbins, plot2file = plot2file,
-                p_hist=TRUE, q_plots=TRUE, MDS_plot=bonusMDS, filesep=filesep) #Feedback where does qcQvalues actually get defined?
+      qcQvalues(norm_x = norm_x, pvalue_v = p_mat[,factor], 
+                obj_qvalue = q_list[[factor]], qcut = qcut, attribs = metadata,
+                oneclass = oneclass, plotdata = plotdata, colorspec = colorspec,
+                histbins=histbins, plot2file = plot2file, filesep=filesep,
+                p_hist=TRUE, q_plots=TRUE, MDS_plot=bonusMDS)
     }
   }
   return("qcQ_wrapper done!")
 }
+
 qcQvalues <-
-function (norm_x, pvalue_v, obj_qvalue, qcut, attribs, oneclass, 
-                      plotdata, colorspec, histbins=40, plot2file = FALSE, 
-                      p_hist=TRUE, q_plots=TRUE, MDS_plot=TRUE, 
+function (norm_x, pvalue_v, obj_qvalue, attribs, oneclass, plotdata, 
+                      colorspec, qcut=1, histbins=40, plot2file = FALSE, 
+                      p_hist=TRUE, q_plots=TRUE, MDS_plot=FALSE, 
                       filesep='/') {
 # This is a check on the proper running of q-value analysis
 # plots:
@@ -132,6 +134,8 @@ function (norm_x, pvalue_v, obj_qvalue, qcut, attribs, oneclass,
 #     each list element contains a string vector with one label per sample
 #  oneclass: string name of attribs element to be used in MDS plot
 #  p_hist, q_plots, MDS_plot: flags to plot (TRUE) or skip (FALSE) plot types
+#     MDS_plot now defaults to FALSE -- please use plotRatios() instead
+#     after selecting a q-value cut based on these QC plots
 #  plotdata is a list of info relevant to labeling and saving the plot
 #     plotdir:  plot destination directory
 #     plotbase:  base filename for the plot. Suggest: bias reduction method
