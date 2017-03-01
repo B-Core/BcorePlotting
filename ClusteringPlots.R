@@ -7,7 +7,7 @@
 # makeHeatmap      --- heatmap child function called by qc & design functions
 # getCidFromHeatmap--- Extract dendrogram info from heatmap return values
 #
-# Author: Julja Burchard, Theresa Lusardi, Jessica Minnier, Mark Fisher
+# Author: Julja Burchard, Theresa Lusardi, Jessica Minnier, Mark Fisher, and Wes Horton
 # Started - July, 2016
 #####################################################################################################
 
