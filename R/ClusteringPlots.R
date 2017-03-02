@@ -533,7 +533,6 @@ function(aheatmapObj, numSubTrees, cutByRowLogic=T){
   #' @param aheatmapObj object returned by the aheatmap() function from the NMF package
   #' @param numSubTrees numerical vector of length 1 specifying number of subclades/subtrees to split the dendrogram row (or column) into.
   #' @param cutByRowLogic boolean specifying to return cluster IDs and orders for rows (TRUE) or columns (FALSE)
-  #' @examples
   #' @export
   # 
   # (old comments and partial example)

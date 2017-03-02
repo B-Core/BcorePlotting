@@ -1,13 +1,12 @@
-Package: CellTypeAnalysis
-Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-Depends:
-    data.table
-    testthat
-License: What license is it under?
-LazyData: TRUE
-RoxygenNote: 5.0.1
+Package: BcorePlotting
+Title: Various Plotting Functions For Abundance Data
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: Utilizes abundance data from standard Bcore pipelines to create a variety of QC plots as well as a few basic analysis plots.
+Depends: R (>= 3.3.2),
+	 data.table,
+	 testthat
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1

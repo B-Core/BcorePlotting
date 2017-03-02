@@ -290,7 +290,7 @@ summary.plots <-
 
 scatterplot <-
   function (normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0) {
-    #' Display indivual replicates vs. average of experimental group in a scatterplot
+    #' Display individual replicates vs. average of experimental group in a scatterplot
     #' @description 
     #' Uses matrix of experimental observations from multiple testing groups. 
     #' Compares individual observations to corresponding group average.
@@ -415,7 +415,7 @@ maplot <-
     #' @param plot2file a boolean specifying whether the plot is to be saved to file according to the file-naming specification laid out in plotdata. Default is FALSE.
     #' @param plotIDOffset a number the specifies offset value for the plot ID. Default value is 0.
     #' @return #Attn. #Feedback
-    #' @example 
+    #' @examples
     #' norm_mat = summ_ls$loess
     #' v1Inst = norm_mat[,1]
     #' v2Inst = norm_mat[,2]
@@ -471,7 +471,7 @@ makePairwisePlotMatrix = function(norm_mat, plotdata, plot2file = FALSE, reso=60
   #'  plotbase:  base filename for the plot
   #'  plottitle:  title for all plots
   #'  @return 
-  #'  @example 
+  #'  @examples
   #'  normInst_mat = summ_ls$loess
   #'  plotdataInst = list(plotdir = "~/Desktop/", plotbase="BaseTest", plottitle = "titleTest")
   #'  plot2fileInst = TRUE
