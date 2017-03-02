@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Display individual replicates vs. average of experimental...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for scatterplot"><tr><td>scatterplot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Display individual replicates vs. average of experimental group in a scatterplot</h2>
+
+<h3>Description</h3>
+
+<p>Uses matrix of experimental observations from multiple testing groups. 
+Compares individual observations to corresponding group average.
+Creates one plot per column, and an average vs average
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+scatterplot(normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>matrix of exerimental data. Rows = observations, columns = samples/experiments (requires named rows and columns)</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>vector of experimental categories of same length as ncol(normmat)</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>list of vectors relevant to labeling and saving plot
+plotdir:  plot destination directory
+plotbase:  base filename for the plot
+plottitle:  title for all plots</p>
+</td></tr>
+</table>
+
+
+</body></html>

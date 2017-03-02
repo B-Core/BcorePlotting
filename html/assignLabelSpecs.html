@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Replicate color mapping with point types and assign legend...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for assignLabelSpecs"><tr><td>assignLabelSpecs</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Replicate color mapping with point types and assign legend point types</h2>
+
+<h3>Description</h3>
+
+<p>This function is called from within makeMDSplot, appropriately assigns point size for plot and legend.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+assignLabelSpecs(extraParams_ls, sampClasses_v, uSampClasses_v, normmat)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>extraParams_ls</code></td>
+<td>
+<p>list of extra plotting parameters. Name of element must be exact name of default plotting argument</p>
+</td></tr>
+<tr valign="top"><td><code>sampClasses_v</code></td>
+<td>
+<p>vector of length == ncol(normmat) containing grouping identifier for each sample</p>
+</td></tr>
+<tr valign="top"><td><code>uSampClasses_v</code></td>
+<td>
+<p>vector of each unique grouping identifier</p>
+</td></tr>
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>data matrix, with unique &amp; informative names</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>list of vectors of plotting parameters
+</p>
+
+
+</body></html>

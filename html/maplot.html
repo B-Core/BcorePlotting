@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Generates Bland-Altman plot: log ratio vs. average of two...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for maplot"><tr><td>maplot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Generates Bland-Altman plot: log ratio vs. average of two samples</h2>
+
+<h3>Description</h3>
+
+<p>Note:  fivenumber or quantile vector will be included in the y-axis label, so it will be clear if the plot has been limited. 
+... #Attn. #Feedback flesh out description more
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+maplot(v1, v2, v12names = list(v1 = "Sample 1", v2 = "Sample 2"), plotdata,
+  yrange = NULL, plot2file = FALSE, plotIDOffset = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>v1</code></td>
+<td>
+<p>a vector of abundance data for a sample of interest</p>
+</td></tr>
+<tr valign="top"><td><code>v2</code></td>
+<td>
+<p>a second vector of same length as v1.</p>
+</td></tr>
+<tr valign="top"><td><code>v12names</code></td>
+<td>
+<p>a list with two elements: v1 and v2, which are strings describing vectors v1 and v2. These strings will appear in the plot. Defaults to calling them &quot;Sample 1&quot; and &quot;Sample 2&quot;.</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>a list with three elements of info relevant to labeling and saving the plot: 1. plotdir-plot destination directory. 2. plotbase-base filename for the plot. 3. plottitle-title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>yrange</code></td>
+<td>
+<p>a numerical vector of length 2 that sets the y-axis range. Default is NULL.</p>
+</td></tr>
+<tr valign="top"><td><code>plot2file</code></td>
+<td>
+<p>a boolean specifying whether the plot is to be saved to file according to the file-naming specification laid out in plotdata. Default is FALSE.</p>
+</td></tr>
+<tr valign="top"><td><code>plotIDOffset</code></td>
+<td>
+<p>a number the specifies offset value for the plot ID. Default value is 0.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>#Attn. #Feedback
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+norm_mat = summ_ls$loess
+v1Inst = norm_mat[,1]
+v2Inst = norm_mat[,2]
+v12namesInst = list(v1=gsub('(^.+?)_.*','\\1', colnames(norm_mat)[1]),v2=gsub('(^.+?)_.*','\\1', colnames(norm_mat)[2]))
+plotdataInst = list(plotdir = "~/Desktop/", plotbase ="MA", plottitle = "MATestPlot")
+yrangeInst = NULL
+plot2fileInst = TRUE
+plotIDOffsetInst = 0
+maplot(v1=v1Inst, v2=v2Inst, v12names = v12namesInst, plotdata = plotdataInst, yrange = yrangeInst, plot2file = plot2fileInst, plotIDOffset = plotIDOffsetInst)
+</pre>
+
+
+</body></html>

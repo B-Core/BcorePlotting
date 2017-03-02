@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Make multi-dimensional scaling plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for makeMDSplot"><tr><td>makeMDSplot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Make multi-dimensional scaling plot</h2>
+
+<h3>Description</h3>
+
+<p>This function considers only a single clustering variable in coloring MDS plot... Will need to be gneralized
+Uses the matrix values to cluster the data
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+makeMDSplot(normmat, attribs, oneclass, colorspec, plottitle, subtitle = NULL,
+  ngenes = NULL, legendPos_v = "auto", varPoints_v = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>data matrix, with unique &amp; informative colnames</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering
+each list element contains a string vector with one label per sample</p>
+</td></tr>
+<tr valign="top"><td><code>oneclass</code></td>
+<td>
+<p>string name of attribs element to be used in MDS plot</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>vector of color specifiers for colorRampPalette
+colors are generated per sample by their clustering variable values</p>
+</td></tr>
+<tr valign="top"><td><code>plottitle</code></td>
+<td>
+<p>title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>subtitle</code></td>
+<td>
+<p>optional subtitle to add below title on this plot</p>
+</td></tr>
+<tr valign="top"><td><code>ngenes</code></td>
+<td>
+<p>number of &quot;top&quot; genes for plotMDS to select for distance calculation</p>
+</td></tr>
+<tr valign="top"><td><code>legendPos_v</code></td>
+<td>
+<p>&quot;auto&quot; means legend in default configuration at upper limit of user space, can specify
+standard options (see ?legend)</p>
+</td></tr>
+<tr valign="top"><td><code>varPoints_v</code></td>
+<td>
+<p>vector of values to scale points by. Default is no scaling. 
+If used, values are placed into 15 bins and assigned cex values from 0.5 to 1.9</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>any extra plotting parameters to pass to plotMDS. (change plotting points, axis labels, etc.)</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>mds plot
+</p>
+
+
+</body></html>

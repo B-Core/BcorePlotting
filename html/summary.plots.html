@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: A wrapper for several plotting functions that help summarize...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for summary.plots"><tr><td>summary.plots</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>A wrapper for several plotting functions that help summarize abundance data #Feedback since rawmat in this case is on log2 scale, will not yet accommodate methylation data</h2>
+
+<h3>Description</h3>
+
+<p>summary.plots currently wraps a boxplot (1), scatterplot (2), density plot (3), sd vs. intensity plot (4), and MA plot (5). The MA plot behavior plots all sample columns in a matrix vs. one BaseSample.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'plots'
+summary(rawmat, normmat, mynorm, samp.labels, samp.classes,
+  colorspec, plotdata, plot2file = FALSE, histbins = 40, expand.2D = 5,
+  SDrange = 7, filesep = "/", plotIDOffset = 0, verbose = FALSE,
+  BaseSample = NULL, yrange = NULL, MAplotOpt = FALSE,
+  whichPlots_v = c("box", "scatter", "density", "spread"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>rawmat</code></td>
+<td>
+<p>a matrix of raw data. Should have minimal background addition and be scaled according to normalized data. In other words, rawmat should be the alograw slot of a normMatrix() call.</p>
+</td></tr>
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>a matrix of experimental data in columns (with headers!)</p>
+</td></tr>
+<tr valign="top"><td><code>mynorm</code></td>
+<td>
+<p>a label for the current normalization method #Feedback not sure what this data type is</p>
+</td></tr>
+<tr valign="top"><td><code>samp.labels</code></td>
+<td>
+<p>a vector of brief, pithy display labels for each sample</p>
+</td></tr>
+<tr valign="top"><td><code>samp.classes</code></td>
+<td>
+<p>a vector of tags for each sample, used to pick colors
+a unique tag per sample colors by sample (e.g., c(&quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;))
+a shared tag by experimental groupings colors by experimental group (e.g. c(&quot;male&quot;, &quot;female&quot;, &quot;female&quot;, &quot;male&quot;))</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>a vector of color specifiers for colorRampPalette</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>a list of info relevant to labeling and saving the plot. Consists of three elements:
+plotdir:  plot destination directory
+plotbase:  base filename for the plot
+plottitle:  title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>histbins</code></td>
+<td>
+<p>default number of bins for density plot</p>
+</td></tr>
+<tr valign="top"><td><code>expand.2D</code></td>
+<td>
+<p>a numeric multiplier of histbins for 2D histogram</p>
+</td></tr>
+<tr valign="top"><td><code>SDrange</code></td>
+<td>
+<p>maximum SD to plot in spread plots</p>
+</td></tr>
+<tr valign="top"><td><code>filesep</code></td>
+<td>
+<p>a string to designate file separators #Feedback not sure</p>
+</td></tr>
+<tr valign="top"><td><code>plotIDOffset</code></td>
+<td>
+<p>a number the specifies offset value for the plot ID. Default value is 0.</p>
+</td></tr>
+<tr valign="top"><td><code>BaseSample</code></td>
+<td>
+<p>a string of the column/sample name that will be used as the sample to which other samples will be compared for MA plots.</p>
+</td></tr>
+<tr valign="top"><td><code>yrange</code></td>
+<td>
+<p>a numerical vector of length 2 that sets the y-axis range. Default is NULL.</p>
+</td></tr>
+<tr valign="top"><td><code>MAplotOpt</code></td>
+<td>
+<p>a boolean that specifies whether the user wants to generate MA plots in this call</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>if verbose is TRUE, a list of ___
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Examples go here
+</pre>
+
+
+</body></html>

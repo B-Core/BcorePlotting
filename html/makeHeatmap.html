@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Make heatmap of ratio data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for makeHeatmap"><tr><td>makeHeatmap</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Make heatmap of ratio data</h2>
+
+<h3>Description</h3>
+
+<p>This function makes a heatmap of ratio data, displaying experimental design values as tracks
+Uses the matrix values to cluster the data
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+makeHeatmap(ratiomat, attribs, plottitle, subtitle = NULL, normmat = NULL,
+  clim.pct = 0.99, clim_fix = NULL, colorbrew = "-PiYG:64",
+  cexRow = 1e-05, annRow = NA, annColors = NA, cexCol = min(0.2 +
+  1/log10(ncol(ratiomat)), 1.2), labcoltype = c("colnames", "colnums"),
+  labRowType = NULL, setCol_v = NULL, setRowv = NULL, colOrder_v = NULL,
+  inclLegend = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>ratiomat</code></td>
+<td>
+<p>ratio data matrix, optimally derived from normmat,
+with unique &amp; informative colnames</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering
+each list element contains a string vector with one label per sample
+set to NA to omit</p>
+</td></tr>
+<tr valign="top"><td><code>plottitle</code></td>
+<td>
+<p>title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>abundance data matrix, optionally used to set color limits
+set to null to use ratiomat for color limits</p>
+</td></tr>
+<tr valign="top"><td><code>clim.pct</code></td>
+<td>
+<p>0:1 - fraction of data to limit max color</p>
+</td></tr>
+<tr valign="top"><td><code>clim_fix</code></td>
+<td>
+<p>if set, max abs ratio to show; data&gt;clim_fix are shown as clim_fix</p>
+</td></tr>
+<tr valign="top"><td><code>colorbrew</code></td>
+<td>
+<p>is a colorBrewer string specifying a heatmap color scale 
+colors are generated per sample by their clustering variable values</p>
+</td></tr>
+<tr valign="top"><td><code>cexRow</code></td>
+<td>
+<p>rowlabel size for heatmap, set to ~invisible by default</p>
+</td></tr>
+<tr valign="top"><td><code>annRow</code></td>
+<td>
+<p>named lists of row annotations; can be single list</p>
+</td></tr>
+<tr valign="top"><td><code>annColors</code></td>
+<td>
+<p>named lists of annotation colors; names should match names in annRow and attribs</p>
+</td></tr>
+<tr valign="top"><td><code>cexCol</code></td>
+<td>
+<p>collabel size for heatmap, set to aheatmap default by default</p>
+</td></tr>
+<tr valign="top"><td><code>labcoltype</code></td>
+<td>
+<p>colnames to show ratiomat column names, colnums to show col #s</p>
+</td></tr>
+<tr valign="top"><td><code>labRowType</code></td>
+<td>
+<p>labels for rows; default NULL doesn't label</p>
+</td></tr>
+<tr valign="top"><td><code>setCol_v</code></td>
+<td>
+<p>name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+Defaults to NULL to keep original clustering (hierarchical)</p>
+</td></tr>
+<tr valign="top"><td><code>setRowv</code></td>
+<td>
+<p>pass through to Rowv argument of aheatmap. Default to NULL, hierarchical clustering</p>
+</td></tr>
+<tr valign="top"><td><code>colOrder_v</code></td>
+<td>
+<p>Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
+to NULL so that if setColv is specified alone, output order will be alphabetical.</p>
+</td></tr>
+<tr valign="top"><td><code>inclLegend</code></td>
+<td>
+<p>logical, should legend be included in plot.</p>
+</td></tr>
+</table>
+
+
+</body></html>

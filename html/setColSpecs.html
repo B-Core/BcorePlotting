@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Set column specs for heatmap</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for setColSpecs"><tr><td>setColSpecs</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Set column specs for heatmap</h2>
+
+<h3>Description</h3>
+
+<p>This function is called in makeHeatmap and determines column ordering and labelling
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+setColSpecs(ratiomat, attribs, setCol_v = NULL, colOrder_v = NULL,
+  labcoltype = c("colnames", "colnums"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>ratiomat</code></td>
+<td>
+<p>ratio data matrix, optimally derived from normmat,
+with unique &amp; informative colnames</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering
+each list element contains a string vector with one label per sample
+set to NA to omit</p>
+</td></tr>
+<tr valign="top"><td><code>setCol_v</code></td>
+<td>
+<p>name of attrib to sort matrix columns by (will turn off column-clustering in heatmap output)
+Defaults to NULL to keep original clustering (hierarchical)</p>
+</td></tr>
+<tr valign="top"><td><code>colOrder_v</code></td>
+<td>
+<p>Vector containing all unique values of attribs[[setColv]] in desired output order. Defaults
+to NULL so that if setColv is specified alone, output order will be alphabetical.</p>
+</td></tr>
+<tr valign="top"><td><code>labcoltype</code></td>
+<td>
+<p>colnames to show ratiomat column names, colnums to show col #s</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>list of column parameters
+</p>
+
+
+</body></html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Differential expression visualizations. Heatmap and MDS plot...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for plotRatios"><tr><td>plotRatios</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Differential expression visualizations. Heatmap and MDS plot of ratios</h2>
+
+<h3>Description</h3>
+
+<p>This function takes a matrix of ratios and displays them graphically in a heatmap and/or MDS plot
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+plotRatios(ratiomat, attribs, oneclass, plotdata, colorspec, rowmask = NULL,
+  tag = "selected", NAtol = ncol(ratiomat)/2, SDtol = 0.01,
+  heatmap_plot = TRUE, MDS_plot = TRUE, clim.pct = 0.99,
+  clim_fix = NULL, plot2file = FALSE, filesep = "/", annColors = NA,
+  annRow = NA, cexRow = 1e-05, png_res = 300)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>ratiomat</code></td>
+<td>
+<p>matrix of ratio data in columns (with headers!)</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering
+each list element contains a string vector with one label per sample</p>
+</td></tr>
+<tr valign="top"><td><code>oneclass</code></td>
+<td>
+<p>string name of attribs element to be used in MDS plot</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>list of info relevant to labeling and saving the plot
+plotdir  plot destination directory
+plotbase  base filename for the plot
+plottitle  title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>is a vector of color specifiers for colorRampPalette</p>
+</td></tr>
+<tr valign="top"><td><code>rowmask</code></td>
+<td>
+<p>optional mask of rows to plot
+default is to create an all-TRUE rowmask of length nrow(ratiomat)</p>
+</td></tr>
+<tr valign="top"><td><code>tag</code></td>
+<td>
+<p>word or phrase to indicate what's special about _these_ ratios</p>
+</td></tr>
+<tr valign="top"><td><code>NAtol</code></td>
+<td>
+<p>max number of NAs tolerated; rows with more are masked out</p>
+</td></tr>
+<tr valign="top"><td><code>SDtol</code></td>
+<td>
+<p>min SD within row tolerated; rows with less are masked out</p>
+</td></tr>
+<tr valign="top"><td><code>heatmap_plot</code></td>
+<td>
+<p>boolean to plot (TRUE) or not (FALSE) heatmap</p>
+</td></tr>
+<tr valign="top"><td><code>MDS_plot</code></td>
+<td>
+<p>boolean to plot (TRUE) or not (FALSE) MDS plot</p>
+</td></tr>
+<tr valign="top"><td><code>clim.pct</code></td>
+<td>
+<p>0:1 - fraction of data to limit max color</p>
+</td></tr>
+<tr valign="top"><td><code>clim_fix</code></td>
+<td>
+<p>if set, max abs ratio to show; data&gt;clim_fix are shown as clim_fix</p>
+</td></tr>
+<tr valign="top"><td><code>annColors</code></td>
+<td>
+<p>optional named lists of annotation colors;
+names should match names in annRow and attribs</p>
+</td></tr>
+<tr valign="top"><td><code>annRow</code></td>
+<td>
+<p>optional named lists of row annotations; can be single list</p>
+</td></tr>
+<tr valign="top"><td><code>cexRow</code></td>
+<td>
+<p>rowlabel size for heatmap, set to ~invisible by default</p>
+</td></tr>
+<tr valign="top"><td><code>png_res</code></td>
+<td>
+<p>resolution of saved png files in dpi; default 300</p>
+</td></tr>
+</table>
+
+
+</body></html>

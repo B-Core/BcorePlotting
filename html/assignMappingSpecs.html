@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Map colors to plotting factor and samples</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for assignMappingSpecs"><tr><td>assignMappingSpecs</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Map colors to plotting factor and samples</h2>
+
+<h3>Description</h3>
+
+<p>This function is called from within makeMDSplot, appropriately colors vectors and changes point size based on input
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+assignMappingSpecs(attribs, oneclass, colorspec, varPoints_v = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering. Each list element contains a string vector with one lable per sample.</p>
+</td></tr>
+<tr valign="top"><td><code>oneclass</code></td>
+<td>
+<p>string name of attribs element to be used in MDS plot</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>vector of color specifiers for colorRampPalette. colors are generated per sample by their clustering variable values</p>
+</td></tr>
+<tr valign="top"><td><code>varPoints_v</code></td>
+<td>
+<p>vector of values to scale points by. Default is no scaling</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>list of vectors of plotting paramters
+</p>
+
+
+</body></html>
