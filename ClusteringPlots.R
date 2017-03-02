@@ -61,30 +61,33 @@ function (ratiomat, attribs, oneclass, plotdata, colorspec,
                        plot2file = FALSE, filesep='/', 
                        annColors = NA, annRow = NA,
                        cexRow=0.00001, png_res=300) {
-# This is intended to display differential expression 
-# It will create a heatmap of ratios and an MDS plot from the same ratios
-# ratiomat: matrix of ratio data in columns (with headers!)
-# rowmask: optional mask of rows to plot
-#   default is to create an all-TRUE rowmask of length nrow(ratiomat)
-# NAtol: max number of NAs tolerated; rows with more are masked out
-# SDtol: min SD within row tolerated; rows with less are masked out
-# attribs: list of sample classifications to be tracked in clustering
-#   each list element contains a string vector with one label per sample
-# tag: word or phrase to indicate what's special about _these_ ratios
-# oneclass: string name of attribs element to be used in MDS plot
-# heatmap_plot, MDS_plot: flags to plot (TRUE) or not (FALSE) these plots
-# plotdata: list of info relevant to labeling and saving the plot
-#   plotdir:  plot destination directory
-#   plotbase:  base filename for the plot
-#   plottitle:  title for all plots
-# colorspec is a vector of color specifiers for colorRampPalette  
-# clim.pct:  0:1 - fraction of data to limit max color
-# clim_fix: if set, max abs ratio to show; data>clim_fix are shown as clim_fix
-# annRow: optional named lists of row annotations; can be single list
-# annColors:  optional named lists of annotation colors;
-#    names should match names in annRow and attribs
-# cexRow: rowlabel size for heatmap, set to ~invisible by default
-# png_res: resolution of saved png files in dpi; default 300
+  #' Differential expression visualizations. Heatmap and MDS plot of ratios
+  #' @description 
+  #' This function takes a matrix of ratios and displays them graphically in a heatmap and/or MDS plot
+  #' @param ratiomat matrix of ratio data in columns (with headers!)
+  #' @param rowmask optional mask of rows to plot
+  #'   default is to create an all-TRUE rowmask of length nrow(ratiomat)
+  #' @param NAtol max number of NAs tolerated; rows with more are masked out
+  #' @param SDtol min SD within row tolerated; rows with less are masked out
+  #' @param attribs list of sample classifications to be tracked in clustering
+  #'   each list element contains a string vector with one label per sample
+  #' @param tag word or phrase to indicate what's special about _these_ ratios
+  #' @param oneclass string name of attribs element to be used in MDS plot
+  #' @param heatmap_plot boolean to plot (TRUE) or not (FALSE) heatmap
+  #' @param MDS_plot boolean to plot (TRUE) or not (FALSE) MDS plot
+  #' @param plotdata list of info relevant to labeling and saving the plot
+  #'   plotdir  plot destination directory
+  #'   plotbase  base filename for the plot
+  #'   plottitle  title for all plots
+  #' @param colorspec is a vector of color specifiers for colorRampPalette  
+  #' @param clim.pct  0:1 - fraction of data to limit max color
+  #' @param clim_fix if set, max abs ratio to show; data>clim_fix are shown as clim_fix
+  #' @param annRow optional named lists of row annotations; can be single list
+  #' @param annColors  optional named lists of annotation colors;
+  #'    names should match names in annRow and attribs
+  #' @param cexRow rowlabel size for heatmap, set to ~invisible by default
+  #' @param png_res resolution of saved png files in dpi; default 300
+  #' @export
 
   # imports
   require(NMF)
@@ -524,8 +527,17 @@ function (ratiomat, attribs, plottitle, subtitle=NULL, normmat=NULL,
 }
 getCidFromHeatmap <-
 function(aheatmapObj, numSubTrees, cutByRowLogic=T){
-  # Return a list of length 2 containing 1) a named vector of cluster IDs when cutting the dendrogram by numSubTrees and 2) a vector of elements in the order as they appear in the dendrogram (left to right for columns and top to bottom for rows).
+  #' Return a list of cluster IDs and elements of dendrogram in left-right order
+  #' @description 
+  #' Takes a heatmap object (see makeHeatmap), and splits rows (or columns) into a dendrogram with specified number of trees. Cluster IDs and elemenets returned.
+  #' @param aheatmapObj object returned by the aheatmap() function from the NMF package
+  #' @param numSubTrees numerical vector of length 1 specifying number of subclades/subtrees to split the dendrogram row (or column) into.
+  #' @param cutByRowLogic boolean specifying to return cluster IDs and orders for rows (TRUE) or columns (FALSE)
+  #' @examples
+  #' @export
   # 
+  # (old comments and partial example)
+  # Return a list of length 2 containing 1) a named vector of cluster IDs when cutting the dendrogram by numSubTrees and 2) a vector of elements in the order as they appear in the dendrogram (left to right for columns and top to bottom for rows).
   # aheatmapObj: an object returned by the aheatmap() function from the NMF package
   # numSubTrees: a numerical argument specifying the number of subclades/subtrees to split the dendrogram row or column into.
   # cutByRowLogic: a boolean specifying whether you want to return cluster IDs and orders for rows (TRUE) or columns (FALSE).

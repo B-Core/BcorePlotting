@@ -290,15 +290,18 @@ summary.plots <-
 
 scatterplot <-
   function (normmat, attribs, plotdata, plot2file = FALSE, plotIDOffset = 0) {
-    # This is intended to show individual replicates vs. average of experimental group
-    # It will create one plot per column, and an average vs average
-    # normmat is a matrix of experimental data in columns (with headers!)
-    # attribs is a vector of experimental categories (one entry per column in normmat)
-    # plotdata is a list of info relevant to labeling and saving the plot
-    #  plotdir:  plot destination directory
-    #  plotbase:  base filename for the plot
-    #  plottitle:  title for all plots
-    #
+    #' Display indivual replicates vs. average of experimental group in a scatterplot
+    #' @description 
+    #' Uses matrix of experimental observations from multiple testing groups. 
+    #' Compares individual observations to corresponding group average.
+    #' Creates one plot per column, and an average vs average
+    #' @param normmat matrix of exerimental data. Rows = observations, columns = samples/experiments (requires named rows and columns)
+    #' @param attribs vector of experimental categories of same length as ncol(normmat)
+    #' @param plotdata list of vectors relevant to labeling and saving plot
+    #'    plotdir:  plot destination directory
+    #'    plotbase:  base filename for the plot
+    #'    plottitle:  title for all plots
+    #' @export
     
     plotID = ifelse(plotIDOffset == 0, '2a', paste0(plotIDOffset + 2, "a"))
     plotlims = c(floor(min(normmat, na.rm=TRUE)), ceiling(max(normmat, na.rm=TRUE)))
