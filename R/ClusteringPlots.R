@@ -14,8 +14,19 @@
 
 gene_pcaplot <-
 function(exprdat,sampleid,groupdat=NULL,colorfactor=NULL,shapefactor=NULL, plot_sampleids=TRUE, pcnum=1:2, plottitle = "PCA Plot") {
-  #borrowed from Jessica Minnier, 2016
-  #adapted from DESeq2:::plotPCA.DESeqTransform
+  #' Make a PCA plot
+  #' @description borrowed from Jessica Minnier, 2016. adapted from DESeq2:::plotPCA.DESeqTransform
+  #' @param exprdat matrix of expression data
+  #' @param sampleid vector of sample IDs
+  #' @param groupdat matrix of groups of samples as columns
+  #' @param colorfactor vector to use in coloring points
+  #' @param shapefactor vector to use in changing point shapes
+  #' @param plot_sampleids logical. if TRUE (default) plot a legend with sample IDs
+  #' @param pcnum vector of pcnum attributes to extract for axis labels
+  #' @param plottitle vector of title for plot
+  #' @return PCA plot
+  #' @export
+  # This contain minimal information. Should be updated by someone with more extensive use of this function.
   pca <- prcomp(t(exprdat))
   percentVar <- pca$sdev^2/sum(pca$sdev^2)
   if(is.null(groupdat)){ groupdat = data.frame("group"=rep(1,ncol(exprdat)))}

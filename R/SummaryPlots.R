@@ -369,10 +369,25 @@ scatterplot <-
 
 
 plot_raw_v_norm <-
-  function(linear_scale_raw_mat_with_rownames, str_of_raw_name=NULL, log2_scale_norm_mat_with_rownames, str_of_norm_name=NULL, xrng_vec=range(range(linear_scale_raw_mat_with_rownames, na.rm=T), range(2^log2_scale_norm_mat_with_rownames, na.rm=T)), yrng_vec=log2(xrng_vec), save_as_png=F, string_to_lead_file_name_with=NULL, color_by_vec_of_str=F, color_vec_of_strings=NULL){
+  function(linear_scale_raw_mat_with_rownames, str_of_raw_name=NULL, log2_scale_norm_mat_with_rownames, str_of_norm_name=NULL, 
+           xrng_vec=range(range(linear_scale_raw_mat_with_rownames, na.rm=T), range(2^log2_scale_norm_mat_with_rownames, na.rm=T)), 
+           yrng_vec=log2(xrng_vec), save_as_png=F, string_to_lead_file_name_with=NULL, color_by_vec_of_str=F, color_vec_of_strings=NULL){
+    #' Plots raw data against normalized data
+    #' @description Need to update the parameters
+    #' @param linear_scale_raw_mat_with_rownames Matrix of data
+    #' @param str_of_raw_name Character vector of name of raw data
+    #' @param log2_scale_norm_mat_with_rownames Matrix of data
+    #' @param str_of_norm_name Character vector of name of norm data
+    #' @param xrng_vec
+    #' @param yrng_vec
+    #' @param save_as_png logical. Default is FALSE. If TRUE, write plot to png file.
+    #' @param string_to_lead_file_name_with Vector with base portion of output file names
+    #' @param color_by_vec_of_string logical. Default is FALSE. If TRUE, apply color specifications to samples
+    #' @param color_vec_of_strings vector of color specifications that can be used for plotting colors
     if(save_as_png==TRUE){
       png(filename=paste0(string_to_lead_file_name_with,"_raw_v_norm.png"),width=5,height=5.4,units="in",res=600)
-      print(plot(as.matrix(linear_scale_raw_mat_with_rownames), as.matrix(log2_scale_norm_mat_with_rownames),log='x',pch='.',xlim=xrng_vec,ylim=yrng_vec, main=paste0("Raw vs. Norm: ", str_of_raw_name," vs. ", str_of_norm_name), xlab="Non-normalized", ylab="Normalized"))
+      print(plot(as.matrix(linear_scale_raw_mat_with_rownames), as.matrix(log2_scale_norm_mat_with_rownames),log='x',pch='.',xlim=xrng_vec,ylim=yrng_vec, 
+                 main=paste0("Raw vs. Norm: ", str_of_raw_name," vs. ", str_of_norm_name), xlab="Non-normalized", ylab="Normalized"))
       if(color_by_vec_of_str==TRUE & !is.null(color_vec_of_strings)){
         cool_cols = colorRampPalette(brewer.pal(11, "Spectral"))(length(unique(color_vec_of_strings)))
         for(j in 1:length(unique(color_vec_of_strings))){
@@ -397,6 +412,7 @@ plot_raw_v_norm <-
       }
     }
   }
+
 maplot <-
   function (v1, v2, v12names=list(v1="Sample 1", v2="Sample 2"), plotdata, yrange = NULL, plot2file = FALSE, plotIDOffset = 0) {
     #' Generates Bland-Altman plot: log ratio vs. average of two samples
@@ -414,7 +430,7 @@ maplot <-
     #' @param yrange a numerical vector of length 2 that sets the y-axis range. Default is NULL.
     #' @param plot2file a boolean specifying whether the plot is to be saved to file according to the file-naming specification laid out in plotdata. Default is FALSE.
     #' @param plotIDOffset a number the specifies offset value for the plot ID. Default value is 0.
-    #' @return #Attn. #Feedback
+    #' @return 
     #' @examples
     #' norm_mat = summ_ls$loess
     #' v1Inst = norm_mat[,1]
