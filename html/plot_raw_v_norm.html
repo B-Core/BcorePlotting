@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Plots raw data against normalized data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for plot_raw_v_norm"><tr><td>plot_raw_v_norm</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Plots raw data against normalized data</h2>
+
+<h3>Description</h3>
+
+<p>Need to update the parameters
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+plot_raw_v_norm(linear_scale_raw_mat_with_rownames, str_of_raw_name = NULL,
+  log2_scale_norm_mat_with_rownames, str_of_norm_name = NULL,
+  xrng_vec = range(range(linear_scale_raw_mat_with_rownames, na.rm = T),
+  range(2^log2_scale_norm_mat_with_rownames, na.rm = T)),
+  yrng_vec = log2(xrng_vec), save_as_png = F,
+  string_to_lead_file_name_with = NULL, color_by_vec_of_str = F,
+  color_vec_of_strings = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>linear_scale_raw_mat_with_rownames</code></td>
+<td>
+<p>Matrix of data</p>
+</td></tr>
+<tr valign="top"><td><code>str_of_raw_name</code></td>
+<td>
+<p>Character vector of name of raw data</p>
+</td></tr>
+<tr valign="top"><td><code>log2_scale_norm_mat_with_rownames</code></td>
+<td>
+<p>Matrix of data</p>
+</td></tr>
+<tr valign="top"><td><code>str_of_norm_name</code></td>
+<td>
+<p>Character vector of name of norm data</p>
+</td></tr>
+<tr valign="top"><td><code>xrng_vec</code></td>
+<td>
+<p>place holder</p>
+</td></tr>
+<tr valign="top"><td><code>yrng_vec</code></td>
+<td>
+<p>place holder</p>
+</td></tr>
+<tr valign="top"><td><code>save_as_png</code></td>
+<td>
+<p>logical. Default is FALSE. If TRUE, write plot to png file.</p>
+</td></tr>
+<tr valign="top"><td><code>string_to_lead_file_name_with</code></td>
+<td>
+<p>Vector with base portion of output file names</p>
+</td></tr>
+<tr valign="top"><td><code>color_vec_of_strings</code></td>
+<td>
+<p>vector of color specifications that can be used for plotting colors</p>
+</td></tr>
+<tr valign="top"><td><code>color_by_vec_of_string</code></td>
+<td>
+<p>logical. Default is FALSE. If TRUE, apply color specifications to samples</p>
+</td></tr>
+</table>
+
+
+</body></html>

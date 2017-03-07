@@ -23,7 +23,7 @@ maplot(v1, v2, v12names = list(v1 = "Sample 1", v2 = "Sample 2"), plotdata,
 \item{plotIDOffset}{a number the specifies offset value for the plot ID. Default value is 0.}
 }
 \value{
-#Attn. #Feedback
+MA plot
 }
 \description{
 Note:  fivenumber or quantile vector will be included in the y-axis label, so it will be clear if the plot has been limited. 

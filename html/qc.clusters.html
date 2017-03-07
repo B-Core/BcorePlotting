@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Creates a heatmap and an MDS plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for qc.clusters"><tr><td>qc.clusters</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Creates a heatmap and an MDS plot</h2>
+
+<h3>Description</h3>
+
+<p>This function currently only considers a single clustering variable and will need to be generalized.
+Data will be centered around the average of all data in the normalized data set
+As a QC plot, want to filter out non-changing data, otherwise it takes a LONG time to complete
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+qc.clusters(normmat, rawmat, attribs, oneclass, plotdata, colorspec,
+  center = "norm", clim.pct, mask = NULL, plot2file = FALSE,
+  filesep = "/")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>normmat</code></td>
+<td>
+<p>data matrix</p>
+</td></tr>
+<tr valign="top"><td><code>rawmat</code></td>
+<td>
+<p>raw data matrix (optionally used to center normmat)</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering 
+each list element contains a string vector with one label per sample</p>
+</td></tr>
+<tr valign="top"><td><code>oneclass</code></td>
+<td>
+<p>string name of attribs element to be used in MDS plot</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>is a list of info relevant to labeling and saving the plot
+plotdir:  plot destination directory
+plotbase:  base filename for the plot
+plottitle:  title for all plots</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>is a vector of color specifiers for colorRampPalette</p>
+</td></tr>
+<tr valign="top"><td><code>center</code></td>
+<td>
+<p>center data on 'norm' for normalized average
+none indicates no-centering needed for zero-centered data
+any other value will trigger centering on the average of rawmat</p>
+</td></tr>
+<tr valign="top"><td><code>clim.pct</code></td>
+<td>
+<p>0:1 - fraction of data to limit max color</p>
+</td></tr>
+<tr valign="top"><td><code>mask</code></td>
+<td>
+<p>NULL default masks rows with SD &gt; SD of entire data set; 
+Numeric vector of length 1 masks rows with SD &gt; value
+Vector of length nrows(normmat) is a custom mask   ***** TBImplemented</p>
+</td></tr>
+<tr valign="top"><td><code>plot2file</code></td>
+<td>
+<p>if true, plot to file as specified in plotdata</p>
+</td></tr>
+</table>
+
+
+</body></html>

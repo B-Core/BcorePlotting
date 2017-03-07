@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Checks proper running of q-value analysis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for qcQvalues"><tr><td>qcQvalues</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Checks proper running of q-value analysis</h2>
+
+<h3>Description</h3>
+
+<p>Creates plots for each design factor (default behavior), or for factors facSel
+1) Histogram of p-values that were included in the design. Must not have right peak.
+2) qvalue's default plots with full q-value range (c(0,1)).
+3) Optional MDS plot at q-value cut
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+qcQvalues(norm_x, pvalue_v, obj_qvalue, attribs, oneclass, plotdata, colorspec,
+  qcut = 1, histbins = 40, plot2file = FALSE, p_hist = TRUE,
+  q_plots = TRUE, MDS_plot = FALSE, filesep = "/")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>norm_x</code></td>
+<td>
+<p>abundance data input into regression (eg, regressMatrix()). nrow(norm_x)==length(p_mat)</p>
+</td></tr>
+<tr valign="top"><td><code>pvalue_v</code></td>
+<td>
+<p>vector of p-values previously used as input to qvalue()</p>
+</td></tr>
+<tr valign="top"><td><code>attribs</code></td>
+<td>
+<p>list of sample classifications to be tracked in clustering
+each list element contains a string vector with one label per sample</p>
+</td></tr>
+<tr valign="top"><td><code>oneclass</code></td>
+<td>
+<p>metadata vector for labeling bonusMDS data; if NULL or not specified, defaults to the first element of metadata</p>
+</td></tr>
+<tr valign="top"><td><code>plotdata</code></td>
+<td>
+<p>is a list of info relevant to labeling and saving the plot With the following elements:
+plotdir:  plot destination directory
+plotbase:  base filename for the plot. Suggest: bias reduction method
+plottitle:  title for all plots
+plotSubtitle:  optional subtitle; suggest lm_expression</p>
+</td></tr>
+<tr valign="top"><td><code>colorspec</code></td>
+<td>
+<p>optional range of colors for MDS plot. Defaults to hotpink/green!</p>
+</td></tr>
+<tr valign="top"><td><code>qcut</code></td>
+<td>
+<p>either a number between 0 and 1 used as an upper qvalue limit for MDS,
+OR a number &gt;1, assumed to be the top n qvalues to use in MDS</p>
+</td></tr>
+<tr valign="top"><td><code>histbins</code></td>
+<td>
+<p>number of bins for p-value histogram; may want to change if there is suspicious behavior</p>
+</td></tr>
+<tr valign="top"><td><code>plot2file</code></td>
+<td>
+<p>logical. if TRUE, write files using plotdata, otherwise to studio graphics viewer</p>
+</td></tr>
+<tr valign="top"><td><code>p_hist</code></td>
+<td>
+<p>logical. TRUE (default) to plot this type.</p>
+</td></tr>
+<tr valign="top"><td><code>q_plots</code></td>
+<td>
+<p>logical. TRUE (default) to plot this type.</p>
+</td></tr>
+<tr valign="top"><td><code>MDS_plot</code></td>
+<td>
+<p>logical. TRUE to plot this type. FALSE is default. Will plot after selecting q-value cut based on QC plots. Use plotRatios() instead!</p>
+</td></tr>
+<tr valign="top"><td><code>filesep</code></td>
+<td>
+<p>string that adds to end of directory path.</p>
+</td></tr>
+<tr valign="top"><td><code>obj_qvalue:</code></td>
+<td>
+<p>S3 object of qvalue class (a list!) returned by qvalue()</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Writes plots to files or to Rstudio viewer. Notes - Looking for even descent to pi0 in top left tuning plot. The slow/steep rise in q-values
+in remaining plots depends on the resolving power of the data.
+</p>
+
+
+</body></html>

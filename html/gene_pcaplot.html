@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Make a PCA plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for gene_pcaplot"><tr><td>gene_pcaplot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Make a PCA plot</h2>
+
+<h3>Description</h3>
+
+<p>borrowed from Jessica Minnier, 2016. adapted from DESeq2:::plotPCA.DESeqTransform
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+gene_pcaplot(exprdat, sampleid, groupdat = NULL, colorfactor = NULL,
+  shapefactor = NULL, plot_sampleids = TRUE, pcnum = 1:2,
+  plottitle = "PCA Plot")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>exprdat</code></td>
+<td>
+<p>matrix of expression data</p>
+</td></tr>
+<tr valign="top"><td><code>sampleid</code></td>
+<td>
+<p>vector of sample IDs</p>
+</td></tr>
+<tr valign="top"><td><code>groupdat</code></td>
+<td>
+<p>matrix of groups of samples as columns</p>
+</td></tr>
+<tr valign="top"><td><code>colorfactor</code></td>
+<td>
+<p>vector to use in coloring points</p>
+</td></tr>
+<tr valign="top"><td><code>shapefactor</code></td>
+<td>
+<p>vector to use in changing point shapes</p>
+</td></tr>
+<tr valign="top"><td><code>plot_sampleids</code></td>
+<td>
+<p>logical. if TRUE (default) plot a legend with sample IDs</p>
+</td></tr>
+<tr valign="top"><td><code>pcnum</code></td>
+<td>
+<p>vector of pcnum attributes to extract for axis labels</p>
+</td></tr>
+<tr valign="top"><td><code>plottitle</code></td>
+<td>
+<p>vector of title for plot</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>PCA plot
+</p>
+
+
+</body></html>
