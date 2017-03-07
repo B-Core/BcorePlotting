@@ -378,12 +378,13 @@ plot_raw_v_norm <-
     #' @param str_of_raw_name Character vector of name of raw data
     #' @param log2_scale_norm_mat_with_rownames Matrix of data
     #' @param str_of_norm_name Character vector of name of norm data
-    #' @param xrng_vec
-    #' @param yrng_vec
+    #' @param xrng_vec place holder
+    #' @param yrng_vec place holder
     #' @param save_as_png logical. Default is FALSE. If TRUE, write plot to png file.
     #' @param string_to_lead_file_name_with Vector with base portion of output file names
     #' @param color_by_vec_of_string logical. Default is FALSE. If TRUE, apply color specifications to samples
     #' @param color_vec_of_strings vector of color specifications that can be used for plotting colors
+    #' @export
     if(save_as_png==TRUE){
       png(filename=paste0(string_to_lead_file_name_with,"_raw_v_norm.png"),width=5,height=5.4,units="in",res=600)
       print(plot(as.matrix(linear_scale_raw_mat_with_rownames), as.matrix(log2_scale_norm_mat_with_rownames),log='x',pch='.',xlim=xrng_vec,ylim=yrng_vec, 
@@ -430,7 +431,7 @@ maplot <-
     #' @param yrange a numerical vector of length 2 that sets the y-axis range. Default is NULL.
     #' @param plot2file a boolean specifying whether the plot is to be saved to file according to the file-naming specification laid out in plotdata. Default is FALSE.
     #' @param plotIDOffset a number the specifies offset value for the plot ID. Default value is 0.
-    #' @return 
+    #' @return MA plot
     #' @examples
     #' norm_mat = summ_ls$loess
     #' v1Inst = norm_mat[,1]
