@@ -164,7 +164,7 @@ summary.plots <-
         sdmat = cbind(sdmat, sapply(which(row_mk),
                                     function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
       } else {
-        sdmat = cbind(sdmat, rep(0,nrow(normmat)) )
+        sdmat = cbind(sdmat, rep(0,nrow(normmat[row_mk,])) )
       }
     }
     colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes #Feedback my u.samp.classes is length 4 while dim sdmat is 0,5.?
