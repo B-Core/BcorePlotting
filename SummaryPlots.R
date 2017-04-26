@@ -309,7 +309,12 @@ scatterplot <-
     n.expts = length(expts)
     
     for (expt in expts)  {
-      avg = rowMeans(normmat[, attribs == expt])
+      avg = try(rowMeans(normmat[, attribs == expt]))
+      if(class(avg) == 'try-error') {
+        avg = normmat[,attribs == expt]
+      } else {
+        avg = rowMeans(normmat[, attribs == expt])
+      }
       for (i in 1:ncol(normmat))  {
         
         if (attribs[i] == expt) {  # Only plot the data in the experimental group
