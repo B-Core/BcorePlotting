@@ -164,7 +164,7 @@ summary.plots <-
         sdmat = cbind(sdmat, sapply(which(row_mk),
                                     function(x){ sd( normmat[x,samp.classes==myclass,drop=F] ,na.rm=T) }) )
       } else {
-        sdmat = cbind(sdmat, rep(0,nrow(normmat)) )
+        sdmat = cbind(sdmat, rep(0,nrow(normmat[row_mk,])) )
       }
     }
     colnames(sdmat) = u.samp.classes; colnames(int_mat) = u.samp.classes #Feedback my u.samp.classes is length 4 while dim sdmat is 0,5.?
@@ -309,7 +309,12 @@ scatterplot <-
     n.expts = length(expts)
     
     for (expt in expts)  {
-      avg = rowMeans(normmat[, attribs == expt])
+      avg = try(rowMeans(normmat[, attribs == expt]))
+      if(class(avg) == 'try-error') {
+        avg = normmat[,attribs == expt]
+      } else {
+        avg = rowMeans(normmat[, attribs == expt])
+      }
       for (i in 1:ncol(normmat))  {
         
         if (attribs[i] == expt) {  # Only plot the data in the experimental group
